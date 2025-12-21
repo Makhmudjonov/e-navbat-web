@@ -1,0 +1,7 @@
+{
+  "name": "Elektron navbat",
+  "description": "Admin va Talabalar portali bilan to'liq elektron navbatni boshqarish tizimi, simulyatsiya qilingan backend mantiqi va sun'iy intellektga asoslangan tahlillar bilan.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
