@@ -1,5 +1,5 @@
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode } from 'react';
 import { User } from '../types';
 
 interface AuthContextType {
@@ -12,19 +12,19 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType>(null!);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
+  // Sinxron ravishda localStorage dan o'qish - refreshda sessiya yo'qolmasligi uchun
+  const [user, setUser] = useState<User | null>(() => {
     try {
       const storedUser = localStorage.getItem('user');
       const token = localStorage.getItem('token');
       if (storedUser && token) {
-        setUser(JSON.parse(storedUser));
+        return JSON.parse(storedUser);
       }
     } catch (e) {
       console.error("Auth initialization error:", e);
     }
-  }, []);
+    return null;
+  });
 
   const login = (userData: User, token: string) => {
     localStorage.setItem('user', JSON.stringify(userData));

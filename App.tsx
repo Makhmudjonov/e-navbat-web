@@ -3,8 +3,8 @@ import React, { useContext } from 'react';
 import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { UserRole } from './types';
 import { AuthProvider, AuthContext } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Login from './pages/Login';
-import PublicQueue from './pages/PublicQueue';
 import AdminLayout from './components/AdminLayout';
 import StudentLayout from './components/StudentLayout';
 
@@ -32,7 +32,6 @@ const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/queue/:id" element={<PublicQueue />} />
       
       <Route path="/admin/*" element={
         <ProtectedRoute allowedRole={UserRole.ADMIN}>
@@ -53,11 +52,13 @@ const AppRoutes: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <HashRouter>
-        <AppRoutes />
-      </HashRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <HashRouter>
+          <AppRoutes />
+        </HashRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

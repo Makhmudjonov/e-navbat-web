@@ -2,7 +2,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { CatchupSchedule } from "../types";
 
-// Always use a named parameter for the API key when initializing GoogleGenAI.
+// Always use the API key exclusively from process.env.API_KEY and named parameter as per guidelines
 const initGenAI = () => {
   if (!process.env.API_KEY) return null;
   return new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -42,13 +42,13 @@ export const generateQueueInsights = async (schedules: CatchupSchedule[], stats:
   `;
 
   try {
-    // Use 'gemini-3-flash-preview' for basic text tasks as per guidelines.
+    // Correct usage of generateContent with model and prompt as per guidelines
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
     });
-    // Access the .text property directly.
-    return response.text;
+    // Accessing .text property directly as it is not a method
+    return response.text || "Hozirgi vaqtda tahlil yaratib bo'lmadi.";
   } catch (error) {
     console.error("Gemini Error:", error);
     return "Hozirgi vaqtda tahlil yaratib bo'lmadi.";

@@ -1,6 +1,14 @@
+
 export enum UserRole {
   ADMIN = 'admin',
   STUDENT = 'student'
+}
+
+export enum TicketStatus {
+  WAITING = 'waiting',
+  CALLED = 'called',
+  COMPLETED = 'completed',
+  CANCELED = 'canceled'
 }
 
 export interface Faculty {
@@ -34,6 +42,23 @@ export interface Building {
   updatedAt?: string;
 }
 
+export interface Queue {
+  id: string;
+  facultyId: string;
+  name: string;
+  isActive: boolean;
+  currentTicketNumber: number;
+}
+
+export interface Ticket {
+  id: string;
+  queueId: string;
+  studentId: string;
+  number: number;
+  status: TicketStatus;
+  createdAt: string;
+}
+
 export interface TimeSlotStatistic {
   timeSlot: string;
   registeredCount: number;
@@ -50,7 +75,7 @@ export interface CatchupSchedule {
   endTime: string;
   timeSlots?: string[];
   timeSlotStatistics?: TimeSlotStatistic[];
-  course: number;
+  courses: number[];
   buildingId: number;
   registrationCount: number;
   attendeesCount: number;
@@ -64,46 +89,28 @@ export interface QueueRegistration {
   catchupScheduleId: number;
   studentId: number;
   status: 'pending' | 'completed' | 'canceled' | string;
-  selectedTimeSlot?: string; // New
-  queueNumber?: number;      // New
-  qrCode?: string;           // New (Base64)
+  selectedTimeSlot?: string;
+  queueNumber?: number;
+  qrCode?: string;
   isActive: boolean;
   createdAt: string;
   catchupSchedule?: CatchupSchedule;
   student?: User;
 }
 
-export interface Queue {
-  id: string;
-  facultyId: number | string;
-  name: string;
-  isActive: boolean;
-  currentTicketNumber: number;
-}
-
-export enum TicketStatus {
-  WAITING = 'waiting',
-  CALLED = 'called',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled'
-}
-
-export interface Ticket {
-  id: string;
-  queueId: string;
-  studentId: number | string;
-  number: number;
-  status: TicketStatus;
-  createdAt: string;
+export interface TwoMBRecord {
+  id: number;
+  journalSubjectName: string;
+  topicName: string;
+  journalType: string;
+  mark: string;
+  date: string;
+  semester: string;
 }
 
 export interface AuthResponse {
   token: string;
   user: User;
-}
-
-export interface ApiError {
-  message: string;
 }
 
 export interface ApiResponse<T> {

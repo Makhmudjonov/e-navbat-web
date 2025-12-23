@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { apiService } from '../services/api';
 import { UserRole } from '../types';
-import { LogIn, Globe, ShieldCheck, GraduationCap, ArrowRight } from 'lucide-react';
+import { User, Lock, ArrowRight, Loader2 } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [role, setRole] = useState<UserRole>(UserRole.STUDENT);
@@ -21,108 +21,118 @@ const Login: React.FC = () => {
       let response;
       if (role === UserRole.ADMIN) {
         response = await apiService.loginAdmin(username, password);
-        login(response.user, response.token);
-        navigate('/admin');
       } else {
         response = await apiService.loginStudent(username, password);
-        login(response.user, response.token);
-        navigate('/student');
       }
+      login(response.user, response.token);
+      navigate(role === UserRole.ADMIN ? '/admin' : '/student');
     } catch (error: any) {
-      alert(error.message || 'ID yoki parol noto\'g\'ri');
+      alert(error.message || 'Kirishda xatolik');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#e1e5ea] flex flex-col font-sans">
-      {/* Top Navbar */}
-      <div className="h-14 bg-white border-b flex items-center justify-between px-6 shadow-sm">
-        <div className="flex items-center gap-3">
-          <img src="https://tashmeduni.uz/web/wp-content/uploads/2025/08/tsmu_logo_200.png" alt="Logo" className="h-9" />
-          <span className="font-heading text-hemis-dark text-lg tracking-tighter uppercase">e-Navbat</span>
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#020617] flex flex-col items-center justify-center p-4 sm:p-6 font-sans transition-colors duration-500">
+      {/* Decorative Blur Elements */}
+      <div className="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/5 dark:bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/5 dark:bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <div className="w-full max-w-[400px] relative z-10">
+        {/* Branding Section */}
+        <div className="flex flex-col items-center mb-8 sm:mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full animate-pulse"></div>
+            <img 
+              src="https://jurnal.tashmeduni.uz/assets/logo-BTn80Xba.png" 
+              className="w-16 h-16 sm:w-20 sm:h-20 object-contain relative z-10 dark:brightness-110 drop-shadow-2xl" 
+              alt="logo" 
+            />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none text-center">
+            Elektron <span className="text-blue-600">Navbat</span>
+          </h1>
+          <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mt-3">Portalga kirish</p>
         </div>
-        <div className="flex items-center gap-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
-          <button className="flex items-center gap-1.5 hover:text-hemis-accent transition-colors">
-            <Globe size={14} /> O'zbekcha
-          </button>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-[420px] bg-white shadow-2xl rounded-lg overflow-hidden border border-gray-100">
-          <div className="p-10">
-            <div className="text-center mb-10">
-              <h2 className="text-2xl font-heading text-gray-800 tracking-tight">Tizimga kirish</h2>
-              <div className="h-1.5 w-12 bg-hemis-accent mx-auto mt-3 rounded-full"></div>
-            </div>
+        {/* Login Card */}
+        <div className="bg-white/80 dark:bg-navy-900/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-none border border-white dark:border-white/5 p-6 sm:p-10 animate-in fade-in zoom-in-95 duration-700 delay-100">
+          
+          {/* Role Switcher */}
+          <div className="flex bg-slate-100/50 dark:bg-navy-950/50 p-1 rounded-2xl mb-8 border border-slate-200/50 dark:border-white/5">
+            <button 
+              type="button"
+              onClick={() => setRole(UserRole.STUDENT)}
+              className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${role === UserRole.STUDENT ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-white shadow-sm ring-1 ring-slate-200/50 dark:ring-white/5' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+            >
+              Talaba
+            </button>
+            <button 
+              type="button"
+              onClick={() => setRole(UserRole.ADMIN)}
+              className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${role === UserRole.ADMIN ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-white shadow-sm ring-1 ring-slate-200/50 dark:ring-white/5' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+            >
+              Admin
+            </button>
+          </div>
 
-            <div className="flex mb-8 bg-gray-100 p-1.5 rounded-lg border border-gray-200">
-              <button
-                onClick={() => setRole(UserRole.STUDENT)}
-                className={`flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-md transition-all duration-300 ${role === UserRole.STUDENT ? 'bg-white text-hemis-accent shadow-md' : 'text-gray-400 hover:text-gray-600'}`}
-              >
-                Talaba
-              </button>
-              <button
-                onClick={() => setRole(UserRole.ADMIN)}
-                className={`flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-md transition-all duration-300 ${role === UserRole.ADMIN ? 'bg-white text-hemis-accent shadow-md' : 'text-gray-400 hover:text-gray-600'}`}
-              >
-                Xodim
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-1.5">
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
-                  {role === UserRole.STUDENT ? 'Talaba ID (Hemis)' : 'Login'}
-                </label>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="group">
+              <div className="flex justify-between mb-2 px-1">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{role === UserRole.ADMIN ? 'Admin ID' : 'Hemis ID'}</label>
+              </div>
+              <div className="relative">
+                <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <input
-                  type="text" required
-                  className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:ring-4 focus:ring-hemis-accent/10 focus:border-hemis-accent outline-none text-sm font-semibold transition-all"
-                  placeholder={role === UserRole.STUDENT ? "316221100xxx" : "admin"}
+                  type="text"
+                  className="w-full bg-slate-50 dark:bg-navy-950/50 border border-slate-200/50 dark:border-white/5 rounded-2xl pl-12 pr-4 py-4 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white placeholder:text-slate-300"
+                  placeholder={role === UserRole.ADMIN ? "Admin loginini kiriting" : "Hemis ID raqamingiz"}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  required
                 />
               </div>
-              <div className="space-y-1.5">
-                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Parol</label>
+            </div>
+
+            <div className="group">
+              <div className="flex justify-between mb-2 px-1">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Parol</label>
+              </div>
+              <div className="relative">
+                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <input
-                  type="password" required
-                  className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:ring-4 focus:ring-hemis-accent/10 focus:border-hemis-accent outline-none text-sm font-semibold transition-all"
+                  type="password"
+                  className="w-full bg-slate-50 dark:bg-navy-950/50 border border-slate-200/50 dark:border-white/5 rounded-2xl pl-12 pr-4 py-4 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white placeholder:text-slate-300"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
-              
-              <div className="flex items-center justify-between text-[11px] pt-1">
-                <label className="flex items-center gap-2 text-gray-500 cursor-pointer font-bold">
-                  <input type="checkbox" className="rounded border-gray-300 text-hemis-accent focus:ring-hemis-accent" /> Eslab qolish
-                </label>
-                <a href="#" className="text-hemis-accent hover:underline font-bold">Parolni unutdingizmi?</a>
-              </div>
+            </div>
 
-              <button
-                type="submit" disabled={loading}
-                className="w-full py-4 bg-hemis-primary text-white font-heading text-xs uppercase tracking-widest rounded-lg hover:bg-hemis-dark transition-all flex items-center justify-center gap-3 mt-6 shadow-lg shadow-hemis-primary/20 active:scale-[0.98] disabled:opacity-50"
-              >
-                {loading ? 'Tekshirilmoqda...' : 'Tizimga kirish'}
-                {!loading && <ArrowRight size={18} />}
-              </button>
-            </form>
-          </div>
-          <div className="bg-gray-50 px-8 py-5 border-t text-[10px] text-gray-400 text-center uppercase tracking-[0.2em] font-black">
-            TMA TERMIZ FILIALI &copy; {new Date().getFullYear()}
-          </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-5 sm:py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/20 transition-all active:scale-[0.97] flex items-center justify-center gap-3 disabled:opacity-70 mt-4 overflow-hidden group/btn"
+            >
+              {loading ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <>
+                  Tizimga kirish 
+                  <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+                </>
+              )}
+            </button>
+          </form>
         </div>
-      </div>
-      
-      {/* Footer */}
-      <div className="p-6 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest">
-        Elektron Navbat Boshqaruv Tizimi • {new Date().getFullYear()}
+        
+        {/* Footer */}
+        <div className="mt-8 text-center animate-in fade-in duration-1000 delay-500">
+           <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.3em] opacity-60">© TDTU Elektron Navbat Tizimi</p>
+        </div>
       </div>
     </div>
   );

@@ -4,24 +4,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>e-Navbat - Elektron Navbat Tizimi</title>
+    <title>TDTU Navbat | Elektron Navbat Tizimi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
-              heading: ['Montserrat', 'sans-serif'],
             },
             colors: {
-              hemis: {
-                dark: '#2d323e',
-                primary: '#3c4b64',
-                secondary: '#636f83',
-                accent: '#3498db',
-                bg: '#f4f7f6'
+              primary: {
+                50: '#f5f3ff',
+                100: '#ede9fe',
+                200: '#ddd6fe',
+                300: '#c4b5fd',
+                400: '#a78bfa',
+                500: '#3b82f6',
+                600: '#2563eb',
+                700: '#1d4ed8',
+                800: '#1e40af',
+                900: '#1e3a8a',
+              },
+              navy: {
+                800: '#0f172a',
+                900: '#0b1121',
+                950: '#020617'
               }
             }
           }
@@ -29,28 +39,52 @@
       }
     </script>
     <style>
-      body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #3c4b64; -webkit-font-smoothing: antialiased; }
-      h1, h2, h3, .heading-font { font-family: 'Montserrat', sans-serif; font-weight: 800; }
-      .hemis-card { border-radius: 4px; border-top: 3px solid #3c4b64; }
-      /* HEMIS uslubidagi sidebar animatsiyasi uchun */
-      .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+      body { 
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafc;
+      }
+      .dark body { background-color: #020617; }
+      
+      .dark .sidebar-item-active {
+        background-color: #2563eb;
+        color: white;
+      }
+      
+      .dark .card-navy {
+        background-color: #0b1121;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* Yaxshilangan scrollbar - ham vertikal, ham horizontal uchun */
+      ::-webkit-scrollbar { width: 5px; height: 5px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.10.1",
-    "axios": "https://esm.sh/axios@1.6.7",
-    "html5-qrcode": "https://esm.sh/html5-qrcode@2.3.8"
-  }
-}
-</script>
-</head>
-  <body>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+        "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0",
+        "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+        "axios": "https://esm.sh/axios@^1.13.2",
+        "html5-qrcode": "https://esm.sh/html5-qrcode@^2.3.8"
+      }
+    }
+    </script>
+  </head>
+  <body class="dark transition-colors duration-200">
     <div id="root"></div>
   </body>
 </html>

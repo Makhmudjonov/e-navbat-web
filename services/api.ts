@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-import { User, UserRole, Faculty, Queue, Ticket, TicketStatus, AuthResponse, ApiResponse, Building, PaginatedResult, CatchupSchedule, QueueRegistration } from '../types';
+import { User, UserRole, Faculty, AuthResponse, ApiResponse, Building, PaginatedResult, CatchupSchedule, QueueRegistration, TwoMBRecord, TimeSlotStatistic } from '../types';
 
 const API_URL = 'https://api-navbat.tashmeduni.uz/api';
 
@@ -22,12 +22,20 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      if (!window.location.hash.startsWith('#/queue/') && window.location.hash !== '#/login' && window.location.pathname !== '/login') {
-          window.location.href = '#/login';
-          window.location.reload();
+    // 400 va 403 xatoliklari biznes logikaga tegishli bo'lishi mumkin, 
+    // shuning uchun ularni logout qilmasdan UI ga qaytaramiz.
+    if (error.response && (error.response.status === 400 || error.response.status === 403 || error.response.status === 409)) {
+      return Promise.reject(error);
+    }
+
+    // Faqatgina 401 (Unauthorized) xatoligida sessiyani tozalaymiz
+    if (error.response && error.response.status === 401) {
+      const currentHash = window.location.hash;
+      if (currentHash !== '#/login') {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.hash = '/login';
+          setTimeout(() => window.location.reload(), 100);
       }
     }
     return Promise.reject(error);
@@ -36,43 +44,23 @@ api.interceptors.response.use(
 
 class HybridService {
   async loginAdmin(username: string, password: string): Promise<AuthResponse> {
-    try {
-      const response = await api.post<ApiResponse<any>>('/auth/admin-login', { username, password });
-      if (!response.data.status) throw new Error(response.data.error || 'Login failed');
-      const userData = response.data.data;
-      return { 
-        token: userData.token, 
-        user: { id: userData.id, username: userData.username, fullName: userData.fullName, role: UserRole.ADMIN }
-      };
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message || error.response?.data?.error || 'Invalid credentials');
-    }
+    const response = await api.post<ApiResponse<any>>('/auth/admin-login', { username, password });
+    if (!response.data.status) throw new Error(response.data.error || 'Kirishda xatolik');
+    const userData = response.data.data;
+    return { 
+      token: userData.token, 
+      user: { id: userData.id, username: userData.username, fullName: userData.fullName, role: UserRole.ADMIN }
+    };
   }
 
   async loginStudent(hemisId: string, password: string): Promise<AuthResponse> {
-    try {
-      const response = await api.post<ApiResponse<any>>('/auth/student-login', { hemisId, password });
-      if (!response.data.status) throw new Error(response.data.error || 'Login failed');
-      const userData = response.data.data;
-      return { 
-        token: userData.token, 
-        user: { id: userData.id, hemisId: userData.hemisId, fullName: userData.fullname, phoneNumber: userData.phoneNumber, facultetId: userData.facultetId, course: userData.course, role: UserRole.STUDENT }
-      };
-    } catch (error: any) {
-        let msg = 'Login failed';
-        if (error.response?.data) {
-             const data = error.response.data;
-             msg = Array.isArray(data.message) ? data.message.join(', ') : (data.message || data.error || msg);
-        }
-        throw new Error(msg);
-    }
-  }
-
-  async getStudentSelf(): Promise<User> {
-    const response = await api.get<ApiResponse<any>>('/student/self');
-    if (!response.data.status) throw new Error('Failed to fetch profile');
-    const data = response.data.data;
-    return { id: data.id, hemisId: data.hemisId, fullName: data.fullname, phoneNumber: data.phoneNumber, facultetId: data.facultetId, course: data.course, role: UserRole.STUDENT, facultet: data.facultet };
+    const response = await api.post<ApiResponse<any>>('/auth/student-login', { hemisId, password });
+    if (!response.data.status) throw new Error(response.data.error || 'Kirishda xatolik');
+    const userData = response.data.data;
+    return { 
+      token: userData.token, 
+      user: { id: userData.id, hemisId: userData.hemisId, fullName: userData.fullname, phoneNumber: userData.phoneNumber, facultetId: userData.facultetId, course: userData.course, role: UserRole.STUDENT }
+    };
   }
 
   async getBuildings(): Promise<Building[]> {
@@ -90,12 +78,13 @@ class HybridService {
     return response.data.data;
   }
 
-  async deleteBuilding(id: number | string): Promise<void> {
-    await api.delete<ApiResponse<any>>(`/building/${id}`);
-  }
-
   async getFaculties(): Promise<Faculty[]> {
     const response = await api.get<ApiResponse<Faculty[]>>('/facultet');
+    return response.data.status ? response.data.data : [];
+  }
+
+  async getFacultiesByBuilding(buildingId: number): Promise<Faculty[]> {
+    const response = await api.get<ApiResponse<Faculty[]>>(`/facultet/by-building/${buildingId}`);
     return response.data.status ? response.data.data : [];
   }
 
@@ -113,7 +102,12 @@ class HybridService {
     await api.delete<ApiResponse<any>>(`/facultet/${id}`);
   }
 
-  async getStudents(page = 1, pageSize = 10): Promise<PaginatedResult<User>> {
+  async syncFaculties(): Promise<any> {
+    const response = await api.post<ApiResponse<any>>('/facultet/sync', {});
+    return response.data;
+  }
+
+  async getStudents(page = 1, pageSize = 15): Promise<PaginatedResult<User>> {
     const response = await api.get<ApiResponse<PaginatedResult<any>>>(`/student?page=${page}&page_size=${pageSize}`);
     if (response.data.status && response.data.data) {
         const result = response.data.data;
@@ -126,10 +120,11 @@ class HybridService {
     }
     return { data: [], totalElements: 0, totalPages: 0, pageSize, currentPage: page };
   }
-  
-  async createStudent(student: any): Promise<User> {
-    const response = await api.post<ApiResponse<any>>('/student', { ...student, course: Number(student.course), facultetId: Number(student.facultetId) });
-    return { ...response.data.data, role: UserRole.STUDENT };
+
+  async createStudent(data: any): Promise<User> {
+    const response = await api.post<ApiResponse<any>>('/student', data);
+    if (!response.data.status) throw new Error(response.data.error || 'Xatolik');
+    return response.data.data;
   }
 
   async getCatchupSchedules(): Promise<CatchupSchedule[]> {
@@ -137,9 +132,15 @@ class HybridService {
     return response.data.status ? response.data.data : [];
   }
 
-  async createCatchupSchedule(data: { name: string; date: string; course: number; buildingId: number; startTime: string; endTime: string }): Promise<CatchupSchedule> {
+  async createCatchupSchedule(data: { name: string; date: string; courses: number[]; buildingId: number; facultetIds: number[]; startTime: string; endTime: string }): Promise<CatchupSchedule> {
     const response = await api.post<ApiResponse<CatchupSchedule>>('/catchup-schedule', data);
     if (!response.data.status) throw new Error('Jadval yaratishda xatolik');
+    return response.data.data;
+  }
+
+  async updateCatchupSchedule(id: number | string, data: { name: string; date: string; courses: number[]; buildingId: number; facultetIds: number[]; startTime: string; endTime: string }): Promise<CatchupSchedule> {
+    const response = await api.patch<ApiResponse<CatchupSchedule>>(`/catchup-schedule/${id}`, data);
+    if (!response.data.status) throw new Error('Jadvalni yangilashda xatolik');
     return response.data.data;
   }
 
@@ -148,57 +149,95 @@ class HybridService {
   }
 
   async getScheduleById(id: number | string): Promise<CatchupSchedule | null> {
-    try {
-      const response = await api.get<ApiResponse<CatchupSchedule>>(`/catchup-schedule/${id}`);
-      return response.data.status ? response.data.data : null;
-    } catch (error) {
-      return null;
+    const response = await api.get<ApiResponse<CatchupSchedule>>(`/catchup-schedule/${id}`);
+    return response.data.status ? response.data.data : null;
+  }
+
+  async getQueueStudentsBySlot(catchupScheduleId: number | string, selectedTimeSlot?: string, status?: string): Promise<QueueRegistration[]> {
+    let url = `/catchup-schedule/by-catchup-schedule?catchupScheduleId=${catchupScheduleId}`;
+    if (selectedTimeSlot && selectedTimeSlot !== 'all') {
+      url += `&selectedTimeSlot=${encodeURIComponent(selectedTimeSlot)}`;
     }
+    if (status && status !== 'all') {
+      url += `&status=${status}`;
+    }
+    const response = await api.get<ApiResponse<QueueRegistration[]>>(url);
+    return response.data.status ? response.data.data : [];
   }
 
   async getQueueDetails(id: number | string): Promise<CatchupSchedule | null> {
-    try {
-      const response = await api.get<ApiResponse<CatchupSchedule[]>>(`/catchup-schedule/pending-students/${id}`);
-      return (response.data.status && response.data.data.length > 0) ? response.data.data[0] : null;
-    } catch (error) {
-      return null;
-    }
-  }
-
-  async getStudentAvailableSchedules(): Promise<CatchupSchedule[]> {
-    try {
-        const response = await api.get<ApiResponse<CatchupSchedule[]>>('/catchup-schedule/by-student');
-        return response.data.status ? response.data.data : [];
-    } catch (error) {
-        return [];
-    }
+    const response = await api.get<ApiResponse<CatchupSchedule[]>>(`/catchup-schedule/pending-students-admin/${id}`);
+    return (response.data.status && response.data.data.length > 0) ? response.data.data[0] : null;
   }
 
   async registerStudentQueue(catchupScheduleId: number, selectedTimeSlot: string): Promise<QueueRegistration> {
-    const response = await api.post<ApiResponse<QueueRegistration>>('/catchup-schedule/register-queue', { 
-        catchupScheduleId,
-        selectedTimeSlot 
-    });
-    if (!response.data.status) throw new Error('Navbatga yozilishda xatolik');
-    return response.data.data;
+    try {
+      const response = await api.post<ApiResponse<QueueRegistration>>('/catchup-schedule/register-queue', { catchupScheduleId, selectedTimeSlot });
+      if (response.data.status === false) {
+        const errorMsg = response.data.error?.message || response.data.error || 'Navbatga yozilishda xatolik';
+        throw new Error(errorMsg);
+      }
+      return response.data.data;
+    } catch (error: any) {
+      // 1. Backend formatiga ko'ra: error.response.data.error.message
+      if (error.response?.data?.error?.message) {
+        throw new Error(error.response.data.error.message);
+      }
+      // 2. Standart xatolik: error.response.data.message
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      // 3. Fallback
+      throw new Error(error.message || "Xatolik yuz berdi");
+    }
   }
 
   async getStudentQueues(): Promise<QueueRegistration[]> {
-    try {
-        const response = await api.get<ApiResponse<QueueRegistration[]>>('/catchup-schedule/queue-student');
-        return response.data.status ? response.data.data : [];
-    } catch(e) {
-        return [];
-    }
+    const response = await api.get<ApiResponse<QueueRegistration[]>>('/catchup-schedule/queue-student');
+    return response.data.status ? response.data.data : [];
   }
 
   async scanQr(qrData: string): Promise<any> {
     const response = await api.post<ApiResponse<any>>('/catchup-schedule/scan-qr', { qrData });
-    if (!response.data.status) {
-      // API xatolik qaytarsa (masalan, 400 yoki 404), status: false bo'ladi
-      throw new Error(response.data.error?.message || response.data.error || 'QR kod noto\'g\'ri yoki muddati o\'tgan');
-    }
+    if (!response.data.status) throw new Error(response.data.error?.message || response.data.error || 'QR kod yaroqsiz');
     return response.data.data;
+  }
+
+  async markStudentArrived(hemisId: string, catchupScheduleId: number): Promise<any> {
+    const response = await api.post<ApiResponse<any>>('/catchup-schedule/mark-arrived', { hemisId, catchupScheduleId });
+    if (!response.data.status) throw new Error(response.data.error?.message || response.data.error || 'Tasdiqlashda xatolik');
+    return response.data.data;
+  }
+
+  async getTwoMBRecords(): Promise<TwoMBRecord[]> {
+    const response = await api.get<ApiResponse<TwoMBRecord[]>>('/two-mb/my-records');
+    return response.data.status ? response.data.data : [];
+  }
+
+  async getStudentArrears(hemisId: string): Promise<TwoMBRecord[]> {
+    const response = await api.get<ApiResponse<any>>(`/external/get-2mb-student/${hemisId}`);
+    if (response.data.status && response.data.data?.data) {
+      return response.data.data.data.map((item: any) => ({
+        id: item.journal_id,
+        journalSubjectName: item.subject,
+        topicName: item.topic_name,
+        journalType: item.journal_type,
+        mark: item.mark ? String(item.mark) : '',
+        date: item.date,
+        semester: item.journal_subject?.semester || ''
+      }));
+    }
+    return [];
+  }
+
+  async getTimeSlotStatistics(id: number | string): Promise<TimeSlotStatistic[]> {
+    const response = await api.get<ApiResponse<TimeSlotStatistic[]>>(`/catchup-schedule/time-slot-statistics/${id}`);
+    return response.data.status ? response.data.data : [];
+  }
+
+  async getStudentAvailableSchedules(): Promise<CatchupSchedule[]> {
+    const response = await api.get<ApiResponse<CatchupSchedule[]>>('/catchup-schedule/by-student');
+    return response.data.status ? response.data.data : [];
   }
 }
 
