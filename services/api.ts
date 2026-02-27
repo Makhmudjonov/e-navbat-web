@@ -22,9 +22,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // 400 va 403 xatoliklari biznes logikaga tegishli bo'lishi mumkin, 
+    // shuning uchun ularni logout qilmasdan UI ga qaytaramiz.
     if (error.response && (error.response.status === 400 || error.response.status === 403 || error.response.status === 409)) {
       return Promise.reject(error);
     }
+
+    // Faqatgina 401 (Unauthorized) xatoligida sessiyani tozalaymiz
     if (error.response && error.response.status === 401) {
       const currentHash = window.location.hash;
       if (currentHash !== '#/login') {
@@ -128,33 +132,13 @@ class HybridService {
     return response.data.status ? response.data.data : [];
   }
 
-  async createCatchupSchedule(data: { 
-    name: string; 
-    date: string; 
-    courses: number[]; 
-    buildingId: number; 
-    facultetIds: number[]; 
-    startTime: string; 
-    endTime: string;
-    registrationStartTime?: string;
-    registrationEndTime?: string;
-  }): Promise<CatchupSchedule> {
+  async createCatchupSchedule(data: { name: string; date: string; courses: number[]; buildingId: number; facultetIds: number[]; startTime: string; endTime: string }): Promise<CatchupSchedule> {
     const response = await api.post<ApiResponse<CatchupSchedule>>('/catchup-schedule', data);
     if (!response.data.status) throw new Error('Jadval yaratishda xatolik');
     return response.data.data;
   }
 
-  async updateCatchupSchedule(id: number | string, data: { 
-    name: string; 
-    date: string; 
-    courses: number[]; 
-    buildingId: number; 
-    facultetIds: number[]; 
-    startTime: string; 
-    endTime: string;
-    registrationStartTime?: string;
-    registrationEndTime?: string;
-  }): Promise<CatchupSchedule> {
+  async updateCatchupSchedule(id: number | string, data: { name: string; date: string; courses: number[]; buildingId: number; facultetIds: number[]; startTime: string; endTime: string }): Promise<CatchupSchedule> {
     const response = await api.patch<ApiResponse<CatchupSchedule>>(`/catchup-schedule/${id}`, data);
     if (!response.data.status) throw new Error('Jadvalni yangilashda xatolik');
     return response.data.data;
@@ -186,12 +170,12 @@ class HybridService {
     return (response.data.status && response.data.data.length > 0) ? response.data.data[0] : null;
   }
 
-  async registerStudentQueue(catchupScheduleId: number, selectedTimeSlot: string, topicId: string): Promise<QueueRegistration> {
+  async registerStudentQueue(catchupScheduleId: number, selectedTimeSlot: string, topicIds: string[]): Promise<QueueRegistration> {
     try {
       const response = await api.post<ApiResponse<QueueRegistration>>('/catchup-schedule/register-queue', { 
         catchupScheduleId, 
         selectedTimeSlot,
-        topicId
+        topicIds
       });
       if (response.data.status === false) {
         const errorMsg = response.data.error?.message || response.data.error || 'Navbatga yozilishda xatolik';
@@ -199,12 +183,15 @@ class HybridService {
       }
       return response.data.data;
     } catch (error: any) {
+      // 1. Backend formatiga ko'ra: error.response.data.error.message
       if (error.response?.data?.error?.message) {
         throw new Error(error.response.data.error.message);
       }
+      // 2. Standart xatolik: error.response.data.message
       if (error.response?.data?.message) {
         throw new Error(error.response.data.message);
       }
+      // 3. Fallback
       throw new Error(error.message || "Xatolik yuz berdi");
     }
   }
