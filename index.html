@@ -58,8 +58,9 @@
       /* Yaxshilangan scrollbar - ham vertikal, ham horizontal uchun */
       ::-webkit-scrollbar { width: 5px; height: 5px; }
       ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-      ::-webkit-scrollbar-thumb:hover { background: #475569; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      .dark ::-webkit-scrollbar-thumb { background: #334155; }
+      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
       .no-scrollbar::-webkit-scrollbar {
         display: none;
@@ -83,8 +84,10 @@
       }
     }
     </script>
-  </head>
-  <body class="dark transition-colors duration-200">
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body class="transition-colors duration-200">
     <div id="root"></div>
-  </body>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>

@@ -89,17 +89,17 @@ const Buildings: React.FC = () => {
            </div>
            <button 
              onClick={() => setIsAdding(true)} 
-             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-all active:scale-95"
+             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95"
            >
              <Plus size={18} strokeWidth={2.5} /> Bino qo'shish
            </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-           <StatCard title="Jami binolar" value={buildings.length} icon={Building2} colorClass="bg-blue-600" />
-           <StatCard title="Umumiy sig'im" value={`${totalCapacity} o'rin`} icon={Monitor} colorClass="bg-emerald-600" />
-           <StatCard title="Faol binolar" value={buildings.filter(b => b.isActive).length} icon={CheckCircle2} colorClass="bg-indigo-600" />
-           <StatCard title="O'rtacha sig'im" value={buildings.length ? Math.round(totalCapacity / buildings.length) : 0} icon={TrendingUp} colorClass="bg-slate-600" />
+           <StatCard title="Jami binolar" value={buildings.length} icon={Building2} colorClass="bg-blue-500" />
+           <StatCard title="Umumiy sig'im" value={`${totalCapacity} o'rin`} icon={Monitor} colorClass="bg-emerald-500" />
+           <StatCard title="Faol binolar" value={buildings.filter(b => b.isActive).length} icon={CheckCircle2} colorClass="bg-indigo-500" />
+           <StatCard title="O'rtacha sig'im" value={buildings.length ? Math.round(totalCapacity / buildings.length) : 0} icon={TrendingUp} colorClass="bg-slate-500" />
         </div>
       </div>
 
@@ -113,7 +113,7 @@ const Buildings: React.FC = () => {
                 <input 
                   type="text" 
                   placeholder="Bino nomi..." 
-                  className="w-full pl-10 pr-4 py-2 bg-white dark:bg-navy-900 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 dark:text-white transition-all shadow-sm"
+                  className="w-full pl-10 pr-4 py-2 bg-white dark:bg-navy-900 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white transition-all shadow-sm font-bold"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -133,7 +133,7 @@ const Buildings: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-white/5">
                 {loading ? (
-                   <tr><td colSpan={5} className="py-24 text-center"><Loader2 className="animate-spin mx-auto text-blue-600" size={32} /></td></tr>
+                   <tr><td colSpan={5} className="py-24 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" size={32} /></td></tr>
                 ) : filteredBuildings.length === 0 ? (
                    <tr><td colSpan={5} className="py-24 text-center text-slate-400 font-bold uppercase tracking-widest opacity-40">Bino topilmadi</td></tr>
                 ) : filteredBuildings.map((b, idx) => (
@@ -141,14 +141,14 @@ const Buildings: React.FC = () => {
                     <td className="px-6 py-5 text-xs font-bold text-slate-400">{idx + 1}</td>
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                         <div className="w-9 h-9 bg-slate-100 dark:bg-white/5 text-slate-500 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                         <div className="w-9 h-9 bg-slate-100 dark:bg-white/5 text-slate-500 rounded-lg flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all">
                             <MapPin size={18}/>
                          </div>
                          <span className="text-sm font-black text-slate-900 dark:text-white tracking-tight">{b.name}</span>
                       </div>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg text-xs font-bold border border-blue-100 dark:border-blue-900/30">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-500/10 text-blue-500 dark:text-blue-400 rounded-lg text-xs font-bold border border-blue-100 dark:border-blue-900/30">
                          <Monitor size={14}/> {b.computerCount} o'rin
                       </div>
                     </td>
@@ -162,7 +162,7 @@ const Buildings: React.FC = () => {
                     </td>
                     <td className="px-6 py-5 text-right">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                         <button onClick={() => handleEdit(b)} className="p-2 bg-white dark:bg-navy-900 border border-slate-200 dark:border-white/5 hover:bg-blue-600 hover:text-white rounded-lg text-slate-500 transition-all shadow-sm">
+                         <button onClick={() => handleEdit(b)} className="p-2 bg-white dark:bg-navy-900 border border-slate-200 dark:border-white/5 hover:bg-blue-500 hover:text-white rounded-lg text-slate-500 transition-all shadow-sm">
                             <Pencil size={16}/>
                          </button>
                          <button className="p-2 bg-white dark:bg-navy-900 border border-slate-200 dark:border-white/5 hover:bg-red-500 hover:text-white rounded-lg text-slate-500 transition-all shadow-sm">
@@ -180,7 +180,7 @@ const Buildings: React.FC = () => {
         {/* Form Panel (Side or Modal-like) */}
         {isAdding ? (
            <div className="lg:col-span-4 bg-white dark:bg-navy-900 rounded-3xl border border-blue-500/30 dark:border-blue-500/20 shadow-xl overflow-hidden animate-in slide-in-from-right duration-500">
-              <div className="p-6 border-b dark:border-white/5 bg-blue-600 flex justify-between items-center">
+              <div className="p-6 border-b dark:border-white/5 bg-blue-500 flex justify-between items-center">
                  <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
                     {editingId ? <Pencil size={18}/> : <Plus size={18}/>}
                     {editingId ? 'Binoni tahrirlash' : 'Yangi bino'}
@@ -195,7 +195,7 @@ const Buildings: React.FC = () => {
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Bino nomi</label>
                     <input 
                        type="text" required 
-                       className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-2xl text-sm outline-none focus:ring-1 focus:ring-blue-500 dark:text-white shadow-inner"
+                       className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-2xl text-sm outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white shadow-inner font-bold"
                        placeholder="Masalan: 1-o'quv binosi"
                        value={formData.name} 
                        onChange={e => setFormData({...formData, name: e.target.value})} 
@@ -206,7 +206,7 @@ const Buildings: React.FC = () => {
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Sig'imi (o'rinlar)</label>
                     <input 
                        type="number" required 
-                       className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-2xl text-sm outline-none focus:ring-1 focus:ring-blue-500 dark:text-white shadow-inner"
+                       className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-2xl text-sm outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white shadow-inner font-bold"
                        placeholder="0"
                        value={formData.computerCount} 
                        onChange={e => setFormData({...formData, computerCount: parseInt(e.target.value) || 0})} 
@@ -214,7 +214,7 @@ const Buildings: React.FC = () => {
                  </div>
 
                  <div className="pt-4 flex flex-col gap-3">
-                    <button type="submit" className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-blue-600/20 transition-all active:scale-95">
+                    <button type="submit" className="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-blue-500/20 transition-all active:scale-95">
                        {editingId ? 'O\'zgarishlarni saqlash' : 'Binoni qo\'shish'}
                     </button>
                     <button type="button" onClick={closeForm} className="w-full py-4 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-200 transition-all">
@@ -225,14 +225,14 @@ const Buildings: React.FC = () => {
            </div>
         ) : (
            <div className="lg:col-span-4 p-8 bg-blue-50/50 dark:bg-navy-900 rounded-3xl border border-blue-100 dark:border-white/5 text-center flex flex-col items-center justify-center gap-4 min-h-[300px]">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-500/10 text-blue-600 rounded-2xl flex items-center justify-center mb-2">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center mb-2">
                  <Building2 size={32}/>
               </div>
               <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight leading-tight">Yangi bino qo'shing</h3>
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed uppercase tracking-widest max-w-[200px]">Tizimga yangi o'quv binolarini qo'shish uchun tugmani bosing</p>
               <button 
                 onClick={() => setIsAdding(true)}
-                className="mt-4 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-blue-600/20 active:scale-95 transition-all"
+                className="mt-4 px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
               >
                 Boshlash
               </button>

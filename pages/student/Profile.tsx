@@ -104,7 +104,7 @@ const StudentProfile: React.FC = () => {
                 <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Oxirgi kirish</p>
                 <div className="flex items-center gap-4 text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-wider">
                    <span className="flex items-center gap-1.5"><Calendar size={14}/> {new Date().toLocaleDateString()}</span>
-                   <span className="flex items-center gap-1.5"><Clock size={14}/> {new Date().toLocaleTimeString()}</span>
+                   <span className="flex items-center gap-1.5"><Clock size={14}/> {new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
                 </div>
              </div>
           </div>

@@ -51,7 +51,7 @@ const Login: React.FC = () => {
             />
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none text-center">
-            Elektron <span className="text-blue-600">Navbat</span>
+            Elektron <span className="text-blue-500">Navbat</span>
           </h1>
           <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mt-3">Portalga kirish</p>
         </div>
@@ -64,14 +64,14 @@ const Login: React.FC = () => {
             <button 
               type="button"
               onClick={() => setRole(UserRole.STUDENT)}
-              className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${role === UserRole.STUDENT ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-white shadow-sm ring-1 ring-slate-200/50 dark:ring-white/5' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+              className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${role === UserRole.STUDENT ? 'bg-white dark:bg-white/10 text-blue-500 dark:text-white shadow-sm ring-1 ring-slate-200/50 dark:ring-white/5' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
             >
               Talaba
             </button>
             <button 
               type="button"
               onClick={() => setRole(UserRole.ADMIN)}
-              className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${role === UserRole.ADMIN ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-white shadow-sm ring-1 ring-slate-200/50 dark:ring-white/5' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+              className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${role === UserRole.ADMIN ? 'bg-white dark:bg-white/10 text-blue-500 dark:text-white shadow-sm ring-1 ring-slate-200/50 dark:ring-white/5' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
             >
               Admin
             </button>
@@ -86,7 +86,7 @@ const Login: React.FC = () => {
                 <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <input
                   type="text"
-                  className="w-full bg-slate-50 dark:bg-navy-950/50 border border-slate-200/50 dark:border-white/5 rounded-2xl pl-12 pr-4 py-4 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white placeholder:text-slate-300"
+                  className="w-full bg-slate-50 dark:bg-navy-950/50 border border-slate-200/50 dark:border-white/5 rounded-2xl pl-12 pr-4 py-4 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-300"
                   placeholder={role === UserRole.ADMIN ? "Admin loginini kiriting" : "Hemis ID raqamingiz"}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -103,7 +103,7 @@ const Login: React.FC = () => {
                 <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <input
                   type="password"
-                  className="w-full bg-slate-50 dark:bg-navy-950/50 border border-slate-200/50 dark:border-white/5 rounded-2xl pl-12 pr-4 py-4 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white placeholder:text-slate-300"
+                  className="w-full bg-slate-50 dark:bg-navy-950/50 border border-slate-200/50 dark:border-white/5 rounded-2xl pl-12 pr-4 py-4 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-300"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -115,7 +115,7 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-5 sm:py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/20 transition-all active:scale-[0.97] flex items-center justify-center gap-3 disabled:opacity-70 mt-4 overflow-hidden group/btn"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-5 sm:py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/20 transition-all active:scale-[0.97] flex items-center justify-center gap-3 disabled:opacity-70 mt-4 overflow-hidden group/btn"
             >
               {loading ? (
                 <Loader2 size={18} className="animate-spin" />

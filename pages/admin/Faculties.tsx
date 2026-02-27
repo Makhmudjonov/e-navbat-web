@@ -115,7 +115,7 @@ const Faculties: React.FC = () => {
         <button 
           onClick={handleSync}
           disabled={syncing}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 shadow-lg shadow-emerald-600/20 active:scale-95"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/20 active:scale-95"
         >
           <RefreshCw size={14} className={syncing ? 'animate-spin' : ''} />
           {syncing ? 'Yangilanmoqda...' : 'HEMIS dan yangilash'}
@@ -125,7 +125,7 @@ const Faculties: React.FC = () => {
       {/* Form Section */}
       <div className="bg-white dark:bg-navy-900 p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-white/5 shadow-sm">
         <h2 className="text-xs font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3 uppercase tracking-[0.2em]">
-           <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white ${editingId ? 'bg-orange-500' : 'bg-blue-600'}`}>
+           <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white ${editingId ? 'bg-orange-500' : 'bg-blue-500'}`}>
               {editingId ? <Pencil size={16} /> : <Plus size={16} />}
            </div>
            {editingId ? 'Fakultetni tahrirlash' : 'Yangi fakultet qo\'shish'}
@@ -160,7 +160,7 @@ const Faculties: React.FC = () => {
                 type="submit"
                 disabled={submitting}
                 className={`flex-1 lg:flex-none px-8 py-3.5 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg transition-all active:scale-95 ${
-                    editingId ? 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/20' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'
+                    editingId ? 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/20' : 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/20'
                 }`}
             >
                 {submitting ? 'Saqlanmoqda...' : editingId ? 'Yangilash' : 'Qo\'shish'}
@@ -187,7 +187,7 @@ const Faculties: React.FC = () => {
               <input 
                 type="text" 
                 placeholder="Fakultet nomi..." 
-                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-navy-950 border border-slate-200 dark:border-white/5 rounded-xl text-[11px] outline-none focus:ring-1 focus:ring-blue-500 dark:text-white transition-all shadow-sm"
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-navy-950 border border-slate-200 dark:border-white/5 rounded-xl text-[11px] outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white transition-all shadow-sm font-bold"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -206,7 +206,7 @@ const Faculties: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-white/5">
               {loading ? (
-                <tr><td colSpan={4} className="py-24 text-center"><Loader2 className="animate-spin mx-auto text-blue-600" size={32} /></td></tr>
+                <tr><td colSpan={4} className="py-24 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" size={32} /></td></tr>
               ) : filteredFaculties.length === 0 ? (
                 <tr><td colSpan={4} className="py-24 text-center text-slate-400 font-bold uppercase tracking-widest opacity-40">Ma'lumot topilmadi</td></tr>
               ) : filteredFaculties.map((f, idx) => (
@@ -214,7 +214,7 @@ const Faculties: React.FC = () => {
                   <td className="px-6 py-5 text-xs font-bold text-slate-400">{idx + 1}</td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                       <div className="w-9 h-9 bg-slate-100 dark:bg-white/5 text-slate-500 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                       <div className="w-9 h-9 bg-slate-100 dark:bg-white/5 text-slate-500 rounded-lg flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all">
                           <GraduationCap size={18}/>
                        </div>
                        <span className="text-[11px] sm:text-xs font-black text-slate-900 dark:text-white tracking-tight uppercase">{f.name}</span>
@@ -228,7 +228,7 @@ const Faculties: React.FC = () => {
                   </td>
                   <td className="px-6 py-5 text-right">
                     <div className="flex justify-end gap-2 sm:opacity-0 group-hover:opacity-100 transition-all">
-                       <button onClick={() => handleEdit(f)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-blue-600 hover:text-white rounded-lg text-slate-500 transition-all shadow-sm">
+                       <button onClick={() => handleEdit(f)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-blue-500 hover:text-white rounded-lg text-slate-500 transition-all shadow-sm">
                           <Pencil size={16}/>
                        </button>
                        <button onClick={() => handleDelete(f.id)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-red-500 hover:text-white rounded-lg text-slate-500 transition-all shadow-sm">

@@ -122,7 +122,7 @@ const AdminQueueDetail: React.FC = () => {
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-48 gap-4">
-      <Loader2 className="animate-spin text-blue-600" size={48} />
+      <Loader2 className="animate-spin text-blue-500" size={48} />
       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Navbat yuklanmoqda...</p>
     </div>
   );
@@ -132,12 +132,12 @@ const AdminQueueDetail: React.FC = () => {
         <AlertCircle size={48} className="mx-auto mb-4 text-red-500" />
         <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Xatolik yuz berdi</h2>
         <p className="text-sm text-slate-500 mb-8">{error}</p>
-        <button onClick={() => navigate('/admin/queues')} className="w-full sm:w-auto bg-blue-600 text-white px-10 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg">Ro'yxatga qaytish</button>
+        <button onClick={() => navigate('/admin/queues')} className="w-full sm:w-auto bg-blue-500 text-white px-10 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg">Ro'yxatga qaytish</button>
     </div>
   );
 
   const filteredStudents = students.filter(s => {
-      const studentName = s.student?.fullName || (s.student as any)?.fullname || '';
+      const studentName = s.student?.fullName || (s.student as any)?.fullname || 'Noma\'lum talaba';
       return studentName.toLowerCase().includes(searchQuery.toLowerCase()) || 
              s.student?.hemisId?.includes(searchQuery);
   });
@@ -184,10 +184,10 @@ const AdminQueueDetail: React.FC = () => {
 
         {/* Stats Cards Grid - Highly Responsive */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <StatCard title="Ro'yxatda" value={schedule.registrationCount} icon={Users} colorClass="bg-blue-600" />
-            <StatCard title="Kelganlar" value={schedule.attendeesCount} icon={CheckCircle2} colorClass="bg-emerald-600" />
-            <StatCard title="Kurs" value={schedule.courses?.length > 0 ? schedule.courses.join(', ') : '?'} icon={GraduationCap} colorClass="bg-indigo-600" />
-            <StatCard title="Vaqt" value={schedule.startTime?.slice(0,5)} icon={Clock} colorClass="bg-slate-600" />
+            <StatCard title="Ro'yxatda" value={schedule.registrationCount} icon={Users} colorClass="bg-blue-500" />
+            <StatCard title="Kelganlar" value={schedule.attendeesCount} icon={CheckCircle2} colorClass="bg-emerald-500" />
+            <StatCard title="Kurs" value={schedule.courses?.length > 0 ? schedule.courses.join(', ') : '?'} icon={GraduationCap} colorClass="bg-indigo-500" />
+            <StatCard title="Vaqt (24s)" value={schedule.startTime?.slice(0,5)} icon={Clock} colorClass="bg-slate-500" />
         </div>
       </div>
 
@@ -209,7 +209,7 @@ const AdminQueueDetail: React.FC = () => {
                  >
                     <button 
                         onClick={() => setSelectedSlot('all')}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shrink-0 ${selectedSlot === 'all' ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-white shadow-sm ring-1 ring-slate-100 dark:ring-white/10' : 'text-slate-500'}`}
+                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shrink-0 ${selectedSlot === 'all' ? 'bg-white dark:bg-white/10 text-blue-500 dark:text-white shadow-sm ring-1 ring-slate-100 dark:ring-white/10' : 'text-slate-500'}`}
                     >
                         Barchasi
                     </button>
@@ -217,7 +217,7 @@ const AdminQueueDetail: React.FC = () => {
                         <button 
                             key={i}
                             onClick={() => setSelectedSlot(slot.timeSlot)}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shrink-0 ${selectedSlot === slot.timeSlot ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-white shadow-sm ring-1 ring-slate-100 dark:ring-white/10' : 'text-slate-500'}`}
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shrink-0 ${selectedSlot === slot.timeSlot ? 'bg-white dark:bg-white/10 text-blue-500 dark:text-white shadow-sm ring-1 ring-slate-100 dark:ring-white/10' : 'text-slate-500'}`}
                         >
                             {slot.timeSlot} <span className="opacity-40 ml-1">({slot.registeredCount})</span>
                         </button>
@@ -231,7 +231,7 @@ const AdminQueueDetail: React.FC = () => {
                  <input 
                    type="text" 
                    placeholder="F.I.Sh yoki ID bo'yicha..." 
-                   className="w-full pl-10 pr-4 py-3 bg-white dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-2xl text-[11px] sm:text-xs outline-none focus:ring-1 focus:ring-blue-500 transition-all dark:text-white shadow-sm"
+                   className="w-full pl-10 pr-4 py-3 bg-white dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-2xl text-[11px] sm:text-xs outline-none focus:ring-1 focus:ring-blue-500 transition-all text-slate-900 dark:text-white shadow-sm font-bold"
                    value={searchQuery}
                    onChange={(e) => setSearchQuery(e.target.value)}
                  />
@@ -248,7 +248,7 @@ const AdminQueueDetail: React.FC = () => {
                     <button
                        key={opt.id}
                        onClick={() => setSelectedStatus(opt.id)}
-                       className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${selectedStatus === opt.id ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white dark:bg-navy-950/50 border-slate-200 dark:border-white/5 text-slate-500 hover:border-blue-500'}`}
+                       className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${selectedStatus === opt.id ? 'bg-blue-500 border-blue-500 text-white shadow-md' : 'bg-white dark:bg-navy-950/50 border-slate-200 dark:border-white/5 text-slate-500 hover:border-blue-500'}`}
                     >
                        {opt.label}
                     </button>
@@ -265,14 +265,14 @@ const AdminQueueDetail: React.FC = () => {
                 <th className="px-6 py-4 text-left w-16">#</th>
                 <th className="px-6 py-4 text-left">Talaba</th>
                 <th className="px-6 py-4 text-center">Kurs</th>
-                <th className="px-6 py-4 text-center">Vaqt</th>
+                <th className="px-6 py-4 text-center">Vaqt (24s)</th>
                 <th className="px-6 py-4 text-center">Holat</th>
                 <th className="px-6 py-4 text-right">Amallar</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-white/5">
                {fetchingStudents ? (
-                  <tr><td colSpan={6} className="py-24 text-center"><Loader2 className="animate-spin mx-auto text-blue-600" size={32} /></td></tr>
+                  <tr><td colSpan={6} className="py-24 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" size={32} /></td></tr>
                ) : filteredStudents.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-24 text-center">
@@ -291,7 +291,7 @@ const AdminQueueDetail: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-slate-100 dark:bg-white/5 text-slate-500 rounded-xl flex items-center justify-center font-black text-xs shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-slate-100 dark:bg-white/5 text-slate-500 rounded-xl flex items-center justify-center font-black text-xs shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-all">
                                {studentName.charAt(0)}
                             </div>
                             <div className="min-w-0">
@@ -319,14 +319,13 @@ const AdminQueueDetail: React.FC = () => {
                               <button 
                                  onClick={() => handleMarkArrived(reg.student?.hemisId || '', reg.id)}
                                  disabled={processingId === reg.id}
-                                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:opacity-50 flex items-center gap-1.5 whitespace-nowrap"
+                                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50 flex items-center gap-1.5 whitespace-nowrap"
                               >
                                  {processingId === reg.id ? <RefreshCw size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}
                                  Keldi
                               </button>
                            ) : (
                               <div className="flex items-center gap-1.5 text-slate-400 bg-slate-100 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/5">
-                                 <Info size={12}/>
                                  <span className="text-[8px] font-black uppercase tracking-widest">Yopilgan</span>
                               </div>
                            )}

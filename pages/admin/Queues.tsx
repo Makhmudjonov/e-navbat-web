@@ -4,7 +4,8 @@ import { apiService } from '../../services/api';
 import { CatchupSchedule, Building, Faculty } from '../../types';
 import { 
   Plus, Calendar, Clock, Eye, Trash2, Search, MapPin, 
-  X, Loader2, CheckCircle, GraduationCap, ChevronRight 
+  X, Loader2, CheckCircle, GraduationCap, ChevronRight,
+  Layers, School, Timer
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,7 +26,9 @@ const Queues: React.FC = () => {
     buildingId: '',
     facultetIds: [] as number[],
     startTime: '09:00',
-    endTime: '18:00'
+    endTime: '18:00',
+    registrationStartTime: '',
+    registrationEndTime: ''
   });
 
   const fetchData = async () => {
@@ -76,8 +79,12 @@ const Queues: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.courses.length === 0 || formData.facultetIds.length === 0) {
-      alert("Iltimos, kamida bitta kurs va fakultetni tanlang");
+    if (formData.courses.length === 0) {
+      alert("Iltimos, kamida bitta kursni tanlang");
+      return;
+    }
+    if (formData.facultetIds.length === 0) {
+      alert("Iltimos, kamida bitta fakultetni tanlang");
       return;
     }
 
@@ -86,13 +93,16 @@ const Queues: React.FC = () => {
       const payload = {
         ...formData,
         buildingId: Number(formData.buildingId),
-        date: new Date(formData.date).toISOString()
+        date: new Date(formData.date).toISOString(),
+        registrationStartTime: formData.registrationStartTime ? new Date(formData.registrationStartTime).toISOString() : undefined,
+        registrationEndTime: formData.registrationEndTime ? new Date(formData.registrationEndTime).toISOString() : undefined
       };
       await apiService.createCatchupSchedule(payload);
       setShowModal(false);
       setFormData({
         name: '', date: '', courses: [], buildingId: '', facultetIds: [],
-        startTime: '09:00', endTime: '18:00'
+        startTime: '09:00', endTime: '18:00',
+        registrationStartTime: '', registrationEndTime: ''
       });
       fetchData();
     } catch (err: any) {
@@ -123,7 +133,7 @@ const Queues: React.FC = () => {
          </div>
          <button 
            onClick={() => setShowModal(true)}
-           className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all active:scale-95"
+           className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95"
          >
            <Plus size={18} /> Yangi navbat
          </button>
@@ -136,7 +146,7 @@ const Queues: React.FC = () => {
               <input 
                 type="text" 
                 placeholder="Qidirish..." 
-                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-[11px] outline-none focus:ring-1 focus:ring-blue-500 transition-all dark:text-white font-bold" 
+                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-[11px] outline-none focus:ring-1 focus:ring-blue-500 transition-all text-slate-900 dark:text-white font-bold" 
               />
            </div>
         </div>
@@ -148,7 +158,7 @@ const Queues: React.FC = () => {
                 <th className="px-6 py-4 w-12 text-center">#</th>
                 <th className="px-6 py-4">Navbat Ma'lumotlari</th>
                 <th className="px-6 py-4">Joylashuv</th>
-                <th className="px-6 py-4">Vaqt</th>
+                <th className="px-6 py-4">Vaqt (24s)</th>
                 <th className="px-6 py-4 text-center">Kurs</th>
                 <th className="px-6 py-4 text-center">Talabalar</th>
                 <th className="px-6 py-4 text-right">Amallar</th>
@@ -156,7 +166,9 @@ const Queues: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-white/5">
               {loading ? (
-                <tr><td colSpan={7} className="py-24 text-center"><Loader2 className="animate-spin mx-auto text-blue-600" size={32} /></td></tr>
+                <tr><td colSpan={7} className="py-24 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" size={32} /></td></tr>
+              ) : schedules.length === 0 ? (
+                <tr><td colSpan={7} className="py-24 text-center text-slate-400 font-bold uppercase tracking-widest opacity-40">Hozircha navbatlar yaratilmagan</td></tr>
               ) : schedules.map((schedule, idx) => (
                 <tr key={schedule.id} className="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors group">
                   <td className="px-6 py-6 text-slate-400 font-bold text-xs text-center">{idx + 1}</td>
@@ -173,7 +185,7 @@ const Queues: React.FC = () => {
                   </td>
                   <td className="px-6 py-6">
                     <div className="flex items-center gap-2 text-[10px] font-black text-slate-600 dark:text-slate-200 uppercase tracking-widest">
-                       <Clock size={14} className="text-blue-500" /> {schedule.startTime?.slice(0,5)} - {schedule.endTime?.slice(0,5)}
+                       <Clock size={14} className="text-blue-500" /> {schedule.startTime} - {schedule.endTime}
                     </div>
                   </td>
                   <td className="px-6 py-6 text-center">
@@ -187,7 +199,7 @@ const Queues: React.FC = () => {
                   </td>
                   <td className="px-6 py-6 text-right">
                     <div className="flex justify-end gap-2 lg:opacity-0 group-hover:opacity-100 transition-all">
-                       <button onClick={() => navigate(`/admin/queues/${schedule.id}`)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-blue-600 hover:text-white rounded-xl text-slate-500 transition-all shadow-sm">
+                       <button onClick={() => navigate(`/admin/queues/${schedule.id}`)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-blue-500 hover:text-white rounded-xl text-slate-500 transition-all shadow-sm">
                           <Eye size={16}/>
                        </button>
                        <button onClick={() => handleDelete(schedule.id)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-red-500 hover:text-white rounded-xl text-slate-500 transition-all shadow-sm">
@@ -202,62 +214,165 @@ const Queues: React.FC = () => {
         </div>
       </div>
 
-      {/* MODAL - Responsive */}
+      {/* MODAL - Navbat yaratish */}
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-sm animate-in fade-in duration-300">
            <div className="bg-white dark:bg-navy-900 w-full max-w-xl rounded-[2rem] shadow-2xl border border-slate-100 dark:border-white/5 overflow-hidden animate-in zoom-in-95">
               <div className="px-6 py-5 border-b dark:border-white/5 flex justify-between items-center bg-slate-50/50 dark:bg-navy-950/50">
                  <div>
-                    <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Navbat yaratish</h3>
-                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Barcha maydonlarni to'ldiring</p>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Yangi navbat yaratish</h3>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Sana va vaqtni tanlang</p>
                  </div>
-                 <button onClick={() => setShowModal(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-white/5 rounded-xl text-slate-500"><X size={20}/></button>
+                 <button onClick={() => setShowModal(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-white/5 rounded-xl text-slate-500 transition-all"><X size={20}/></button>
               </div>
 
               <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6 max-h-[80vh] overflow-y-auto no-scrollbar">
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="space-y-1.5">
-                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Nomi</label>
-                       <input type="text" required className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 dark:text-white" placeholder="..." value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}/>
+                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Navbat nomi</label>
+                       <input 
+                         type="text" required 
+                         className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white font-bold" 
+                         placeholder="Masalan: Yakuniy nazorat topshirish" 
+                         value={formData.name} 
+                         onChange={e => setFormData({...formData, name: e.target.value})}
+                       />
                     </div>
                     <div className="space-y-1.5">
                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Sana</label>
-                       <input type="date" required className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})}/>
+                       <input 
+                         type="date" required 
+                         className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white font-bold" 
+                         value={formData.date} 
+                         onChange={e => setFormData({...formData, date: e.target.value})}
+                       />
                     </div>
                  </div>
 
+                 {/* Dars bo'lish vaqti */}
                  <div className="grid grid-cols-2 gap-5">
                     <div className="space-y-1.5">
-                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Boshlanish</label>
-                       <input type="time" required className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.startTime} onChange={e => setFormData({...formData, startTime: e.target.value})}/>
+                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                          <Clock size={10} /> Dars Boshlanish (24s)
+                       </label>
+                       <input 
+                         type="time" required 
+                         className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white font-bold" 
+                         value={formData.startTime} 
+                         onChange={e => setFormData({...formData, startTime: e.target.value})}
+                       />
                     </div>
                     <div className="space-y-1.5">
-                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Tugash</label>
-                       <input type="time" required className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.endTime} onChange={e => setFormData({...formData, endTime: e.target.value})}/>
+                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                          <Clock size={10} /> Dars Tugash (24s)
+                       </label>
+                       <input 
+                         type="time" required 
+                         className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white font-bold" 
+                         value={formData.endTime} 
+                         onChange={e => setFormData({...formData, endTime: e.target.value})}
+                       />
+                    </div>
+                 </div>
+
+                 {/* Ro'yxatdan o'tish vaqti */}
+                 <div className="p-4 bg-blue-50 dark:bg-blue-500/5 rounded-2xl border border-blue-100 dark:border-blue-500/10 space-y-4">
+                    <h4 className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                       <Timer size={14} /> Ro'yxatdan o'tish davri
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                       <div className="space-y-1.5">
+                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Boshlanish</label>
+                          <input 
+                            type="datetime-local" required 
+                            className="w-full px-4 py-3 bg-white dark:bg-navy-950 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white font-bold" 
+                            value={formData.registrationStartTime} 
+                            onChange={e => setFormData({...formData, registrationStartTime: e.target.value})}
+                          />
+                       </div>
+                       <div className="space-y-1.5">
+                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Tugash</label>
+                          <input 
+                            type="datetime-local" required 
+                            className="w-full px-4 py-3 bg-white dark:bg-navy-950 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white font-bold" 
+                            value={formData.registrationEndTime} 
+                            onChange={e => setFormData({...formData, registrationEndTime: e.target.value})}
+                          />
+                       </div>
                     </div>
                  </div>
 
                  <div className="space-y-3">
-                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Kurslar</label>
+                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                       <Layers size={14} className="text-blue-500" /> Kurslar
+                    </label>
                     <div className="flex flex-wrap gap-2">
                        {[1, 2, 3, 4, 5, 6].map(course => (
-                          <button key={course} type="button" onClick={() => toggleCourse(course)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${formData.courses.includes(course) ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-slate-50 dark:bg-navy-950 border-slate-200 dark:border-white/5 text-slate-500'}`}>{course}</button>
+                          <button 
+                            key={course} 
+                            type="button" 
+                            onClick={() => toggleCourse(course)} 
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${formData.courses.includes(course) ? 'bg-blue-500 border-blue-500 text-white shadow-md' : 'bg-slate-50 dark:bg-navy-950 border-slate-200 dark:border-white/5 text-slate-500'}`}
+                          >
+                             {course}-kurs
+                          </button>
                        ))}
                     </div>
                  </div>
 
                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Bino</label>
-                    <select required className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 dark:text-white" value={formData.buildingId} onChange={e => setFormData({...formData, buildingId: e.target.value, facultetIds: []})}>
-                       <option value="">Tanlang</option>
+                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                       <MapPin size={14} className="text-blue-500" /> O'quv binosi
+                    </label>
+                    <select 
+                      required 
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white font-bold" 
+                      value={formData.buildingId} 
+                      onChange={e => setFormData({...formData, buildingId: e.target.value, facultetIds: []})}
+                    >
+                       <option value="">Binoni tanlang</option>
                        {buildings.map(b => (<option key={b.id} value={b.id}>{b.name}</option>))}
                     </select>
                  </div>
 
+                 {formData.buildingId && (
+                    <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                          <School size={14} className="text-blue-500" /> Fakultetlar
+                       </label>
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[150px] overflow-y-auto no-scrollbar border border-slate-100 dark:border-white/5 rounded-xl p-3 bg-slate-50 dark:bg-navy-950/50">
+                          {faculties.length === 0 ? (
+                             <p className="col-span-full text-center text-[10px] font-bold text-slate-400 py-4 italic uppercase">Fakultetlar topilmadi</p>
+                          ) : faculties.map(f => (
+                             <button 
+                                key={f.id} 
+                                type="button" 
+                                onClick={() => toggleFaculty(Number(f.id))} 
+                                className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-tight text-left transition-all border ${formData.facultetIds.includes(Number(f.id)) ? 'bg-indigo-500 border-indigo-500 text-white shadow-sm' : 'bg-white dark:bg-navy-900 border-slate-200 dark:border-white/10 text-slate-500 hover:border-indigo-500'}`}
+                             >
+                                <div className={`w-1.5 h-1.5 rounded-full ${formData.facultetIds.includes(Number(f.id)) ? 'bg-white' : 'bg-slate-300'}`}></div>
+                                {f.name}
+                             </button>
+                          ))}
+                       </div>
+                    </div>
+                 )}
+
                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-4 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-2xl font-black text-[10px] uppercase tracking-widest">Bekor qilish</button>
-                    <button type="submit" disabled={submitting} className="flex-[2] py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-600/20 disabled:opacity-50">
-                       {submitting ? 'Saqlanmoqda...' : 'Yaratish'}
+                    <button 
+                      type="button" 
+                      onClick={() => setShowModal(false)} 
+                      className="flex-1 py-4 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all"
+                    >
+                       Bekor qilish
+                    </button>
+                    <button 
+                      type="submit" 
+                      disabled={submitting} 
+                      className="flex-[2] py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-500/20 disabled:opacity-50 transition-all active:scale-95 flex items-center justify-center gap-2"
+                    >
+                       {submitting ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
+                       {submitting ? 'Yaratilmoqda...' : 'Navbatni yaratish'}
                     </button>
                  </div>
               </form>

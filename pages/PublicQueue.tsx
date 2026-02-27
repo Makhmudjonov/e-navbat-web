@@ -90,8 +90,8 @@ const PublicQueue: React.FC = () => {
                  <p className="text-2xl font-bold leading-none mb-1">{schedule.attendeesCount}</p>
                  <p className="text-[9px] font-bold uppercase opacity-70">Kelganlar</p>
               </div>
-           </div>
         </div>
+      </div>
       </div>
 
       <div className="max-w-7xl mx-auto p-6 lg:p-10 space-y-6">
@@ -107,7 +107,6 @@ const PublicQueue: React.FC = () => {
                   <span className="font-bold text-sm uppercase">{new Date(schedule.date).toLocaleDateString()}</span>
                </div>
                <div className="flex items-center gap-3 text-slate-600">
-                  {/* Fixed: Added missing GraduationCap import */}
                   <GraduationCap size={20} className="text-primary" />
                   <span className="font-bold text-sm uppercase">{schedule.courses?.length > 0 ? schedule.courses.join(', ') : '?'}-kurslar</span>
                </div>
@@ -154,7 +153,7 @@ const PublicQueue: React.FC = () => {
                      <tr className="border-b">
                         <th className="px-6 py-4 text-left w-24">Navbat</th>
                         <th className="px-6 py-4 text-left">F.I.Sh</th>
-                        <th className="px-6 py-4 text-center">Vaqt Oralig'i</th>
+                        <th className="px-6 py-4 text-center">Vaqt Oralig'i (24s)</th>
                         <th className="px-6 py-4 text-center">Xolati</th>
                      </tr>
                   </thead>
@@ -200,7 +199,7 @@ const PublicQueue: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-[11px] font-bold uppercase tracking-widest">
          <span>© TDTU Elektron Navbat Monitoring Portali</span>
          <div className="flex gap-6">
-            <span className="flex items-center gap-1.5"><Clock size={14}/> Oxirgi yangilanish: {new Date().toLocaleTimeString()}</span>
+            <span className="flex items-center gap-1.5"><Clock size={14}/> Oxirgi yangilanish: {new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}</span>
             <span className="flex items-center gap-1.5 text-primary"><RefreshCw size={14}/> Avtomatik yangilanmoqda</span>
          </div>
       </div>

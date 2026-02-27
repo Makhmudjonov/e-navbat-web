@@ -15,7 +15,6 @@ const AdminScanner: React.FC = () => {
   useEffect(() => {
     const startScanner = async () => {
       try {
-        // DOM element tayyorligini kutish
         await new Promise(r => setTimeout(r, 600));
         
         if (scannerRef.current) {
@@ -91,12 +90,9 @@ const AdminScanner: React.FC = () => {
 
     try {
       const data = await apiService.scanQr(decodedText);
-      
-      // Talabani keldi deb belgilash
       if (data && data.student?.hemisId && data.catchupScheduleId) {
           await apiService.markStudentArrived(data.student.hemisId, data.catchupScheduleId);
       }
-      
       setResult(data);
     } catch (err: any) {
       setError(err.message || "QR kod yaroqsiz yoki tasdiqlashda xatolik.");
@@ -152,11 +148,11 @@ const AdminScanner: React.FC = () => {
                 </div>
             ) : error ? (
                 <div className="text-center space-y-6">
-                    <div className="bg-red-50 dark:bg-red-900/10 w-24 h-24 rounded-full flex items-center justify-center text-red-500 mx-auto border border-red-100 dark:border-red-900/20 shadow-inner">
+                    <div className="bg-rose-50 dark:bg-rose-900/10 w-24 h-24 rounded-full flex items-center justify-center text-rose-500 mx-auto border border-rose-100 dark:border-rose-900/20 shadow-inner">
                         <CameraOff size={48} />
                     </div>
                     <div>
-                        <h3 className="text-2xl font-black text-red-600 tracking-tight">Xatolik</h3>
+                        <h3 className="text-2xl font-black text-rose-500 tracking-tight">Xatolik</h3>
                         <p className="text-sm text-slate-500 dark:text-slate-400 font-bold mt-2 max-w-xs mx-auto leading-relaxed">{error}</p>
                     </div>
                     <button onClick={handleReset} className="w-full py-4 bg-slate-900 dark:bg-slate-800 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl">
@@ -165,7 +161,7 @@ const AdminScanner: React.FC = () => {
                 </div>
             ) : (
                 <div className="text-center space-y-8 animate-in slide-in-from-bottom duration-500">
-                    <div className="bg-green-50 dark:bg-green-900/10 w-24 h-24 rounded-[2rem] flex items-center justify-center text-green-500 mx-auto shadow-lg border border-green-100 dark:border-green-900/20">
+                    <div className="bg-emerald-50 dark:bg-emerald-900/10 w-24 h-24 rounded-[2rem] flex items-center justify-center text-emerald-500 mx-auto shadow-lg border border-emerald-100 dark:border-emerald-900/20">
                         <CheckCircle size={48} />
                     </div>
                     
@@ -196,7 +192,7 @@ const AdminScanner: React.FC = () => {
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Holati</p>
-                                    <span className="inline-block px-3 py-1 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-black uppercase rounded-md shadow-sm border border-green-200 dark:border-green-800">Tasdiqlandi</span>
+                                    <span className="inline-block px-3 py-1 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-500 dark:text-emerald-400 text-xs font-black uppercase rounded-md shadow-sm border border-emerald-200 dark:border-emerald-800">Tasdiqlandi</span>
                                 </div>
                             </div>
                         </div>

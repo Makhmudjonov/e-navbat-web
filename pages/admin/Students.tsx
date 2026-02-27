@@ -82,7 +82,7 @@ const Students: React.FC = () => {
             >
               <RefreshCw size={20} className={fetching ? 'animate-spin' : ''} />
             </button>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-all active:scale-95">
+            <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95">
               <Plus size={18} strokeWidth={2.5} /> Talaba qo'shish
             </button>
          </div>
@@ -95,7 +95,7 @@ const Students: React.FC = () => {
              <input 
                 type="text" 
                 placeholder="F.I.Sh yoki HEMIS ID bo'yicha qidirish..." 
-                className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs font-bold outline-none focus:ring-1 focus:ring-blue-500 transition-all dark:text-white"
+                className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-navy-950/50 border border-slate-200 dark:border-white/5 rounded-xl text-xs font-bold outline-none focus:ring-1 focus:ring-blue-500 transition-all text-slate-900 dark:text-white"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
              />
@@ -145,7 +145,7 @@ const Students: React.FC = () => {
                   </td>
                   <td className="px-6 py-5">
                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center font-black text-sm border border-blue-200/50 dark:border-blue-500/20 group-hover:scale-110 transition-transform">
+                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/10 text-blue-500 dark:text-blue-400 rounded-xl flex items-center justify-center font-black text-sm border border-blue-200/50 dark:border-blue-500/20 group-hover:scale-110 transition-transform">
                            {student.fullName.charAt(0)}
                         </div>
                         <div className="min-w-0">
@@ -174,7 +174,7 @@ const Students: React.FC = () => {
                   <td className="px-6 py-5 text-right">
                      <button 
                         onClick={() => openArrearsModal(student)}
-                        className="p-2.5 bg-rose-50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-100 transition-all border border-rose-100 dark:border-rose-900/20 flex items-center gap-2 ml-auto group/btn"
+                        className="p-2.5 bg-rose-50 dark:bg-rose-900/10 text-rose-500 dark:text-rose-400 rounded-xl hover:bg-rose-100 transition-all border border-rose-100 dark:border-rose-900/20 flex items-center gap-2 ml-auto group/btn"
                      >
                         <BookOpen size={16} className="group-hover/btn:scale-110 transition-transform" />
                         <span className="text-[9px] font-black uppercase tracking-widest hidden sm:inline">2/NB</span>
@@ -216,7 +216,7 @@ const Students: React.FC = () => {
           <div className="bg-white dark:bg-navy-900 w-full max-w-2xl rounded-[2.5rem] shadow-2xl border border-slate-100 dark:border-white/5 overflow-hidden animate-in zoom-in-95">
              <div className="px-8 py-6 border-b dark:border-white/5 flex justify-between items-center bg-slate-50/50 dark:bg-navy-950/50">
                 <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 bg-rose-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-rose-600/20">
+                   <div className="w-12 h-12 bg-rose-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-rose-500/20">
                       <BookOpen size={24} />
                    </div>
                    <div>
@@ -241,17 +241,17 @@ const Students: React.FC = () => {
                       <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Qarzdorliklar topilmadi</p>
                    </div>
                 ) : (
-                   <div className="grid grid-cols-1 gap-4">
+                   <div className="grid grid-cols-1 gap-4 text-slate-900 dark:text-white">
                       {arrears.map((record, i) => (
                          <div key={i} className="p-5 bg-slate-50 dark:bg-navy-950/50 border border-slate-100 dark:border-white/5 rounded-[1.5rem] hover:border-rose-500/30 transition-all group">
                             <div className="flex justify-between items-start mb-3">
                                <div>
-                                  <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1 group-hover:text-rose-600 transition-colors">{record.journalSubjectName}</h4>
+                                  <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1 group-hover:text-rose-500 transition-colors">{record.journalSubjectName}</h4>
                                   <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase">
                                      <Book size={12} className="text-rose-500" /> {record.journalType}
                                   </div>
                                </div>
-                               <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm ${record.mark ? 'bg-rose-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+                               <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm ${record.mark ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-600'}`}>
                                   {record.mark || 'NB'}
                                </div>
                             </div>

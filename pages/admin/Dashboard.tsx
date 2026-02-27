@@ -75,7 +75,7 @@ const DashboardHome: React.FC = () => {
         <button 
           onClick={handleAiAnalysis}
           disabled={isAiLoading}
-          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:opacity-50"
+          className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50"
         >
           {isAiLoading ? <Loader2 size={16} className="animate-spin" /> : <Activity size={16} />}
           AI Hisoboti
@@ -83,10 +83,10 @@ const DashboardHome: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <StatCard title="Talabalar" value={stats.students} icon={Users} trend="+12%" colorClass="bg-blue-600 shadow-blue-600/10" />
-        <StatCard title="Jadvallar" value={stats.faculties} icon={Layers} colorClass="bg-indigo-600 shadow-indigo-600/10" />
-        <StatCard title="Ro'yxatlar" value={stats.registrations} icon={Activity} trend="+28%" colorClass="bg-emerald-600 shadow-emerald-600/10" />
-        <StatCard title="Binolar" value={stats.buildings} icon={Building2} colorClass="bg-slate-600 shadow-slate-600/10" />
+        <StatCard title="Talabalar" value={stats.students} icon={Users} trend="+12%" colorClass="bg-blue-500 shadow-blue-500/10" />
+        <StatCard title="Jadvallar" value={stats.faculties} icon={Layers} colorClass="bg-indigo-500 shadow-indigo-500/10" />
+        <StatCard title="Ro'yxatlar" value={stats.registrations} icon={Activity} trend="+28%" colorClass="bg-emerald-500 shadow-emerald-500/10" />
+        <StatCard title="Binolar" value={stats.buildings} icon={Building2} colorClass="bg-slate-500 shadow-slate-500/10" />
       </div>
 
       <div className="bg-white dark:bg-navy-900 rounded-[2rem] border border-slate-100 dark:border-white/5 overflow-hidden shadow-sm">

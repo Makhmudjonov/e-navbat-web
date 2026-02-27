@@ -1,11 +1,12 @@
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
 import { apiService } from '../../services/api';
+import { AuthContext } from '../../context/AuthContext';
 import { CatchupSchedule, QueueRegistration, TwoMBRecord, TimeSlotStatistic } from '../../types';
 import { 
   Calendar, Clock, CheckCircle, RefreshCw, Ticket, X, 
   AlertCircle, MapPin, UserCheck, BookOpen, Layers, Loader2, 
-  ArrowRight, Building2, Timer, Star, Monitor, AlertTriangle
+  ArrowRight, Building2, Timer, Star, Monitor, AlertTriangle, Book
 } from 'lucide-react';
 
 // Chiroyli bildirishnoma (Toast) komponenti
@@ -58,6 +59,7 @@ const StatCard = ({ title, value, icon: Icon, colorClass, subtitle }: { title: s
 );
 
 const StudentHome: React.FC = () => {
+  const { user } = useContext(AuthContext);
   const [availableSchedules, setAvailableSchedules] = useState<CatchupSchedule[]>([]);
   const [myRegistrations, setMyRegistrations] = useState<(QueueRegistration & { position?: number })[]>([]);
   const [twoMBRecords, setTwoMBRecords] = useState<TwoMBRecord[]>([]);
@@ -68,6 +70,10 @@ const StudentHome: React.FC = () => {
   const [selectedSchedule, setSelectedSchedule] = useState<CatchupSchedule | null>(null);
   const [timeSlotStats, setTimeSlotStats] = useState<TimeSlotStatistic[]>([]);
   const [selectedSlot, setSelectedSlot] = useState('');
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
+  const [modalRecords, setModalRecords] = useState<TwoMBRecord[]>([]);
+  const [modalLoading, setModalLoading] = useState(false);
+  
   const [submitting, setSubmitting] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
   const [regSuccess, setRegSuccess] = useState(false);
@@ -108,24 +114,42 @@ const StudentHome: React.FC = () => {
 
     setSelectedSchedule(schedule);
     setSelectedSlot('');
+    setSelectedTopicIds([]);
     setModalError(null);
     setRegSuccess(false);
+    setModalRecords([]);
     setShowRegModal(true);
+    setModalLoading(true);
+
     try {
-      const stats = await apiService.getTimeSlotStatistics(schedule.id);
+      const [stats, records] = await Promise.all([
+         apiService.getTimeSlotStatistics(schedule.id),
+         user?.hemisId ? apiService.getStudentArrears(user.hemisId) : Promise.resolve([])
+      ]);
       setTimeSlotStats(stats);
+      setModalRecords(records);
     } catch (e: any) {
-      console.error("Stats fetching error:", e);
-      // Agar 403 yoki boshqa xato bo'lsa modal ichida xabar berish
+      console.error("Stats/Arrears fetching error:", e);
       if (e.message?.includes('403')) {
         setModalError("Ma'lumotlarni yuklash ruxsati yo'q (403). Iltimos, qayta kiring.");
+      } else {
+        setModalError("Ma'lumotlarni yuklashda xatolik.");
       }
+    } finally {
+      setModalLoading(false);
     }
   };
 
   const handleRegister = async (e?: React.FormEvent) => {
     if (e) e.preventDefault(); 
-    if (!selectedSchedule || !selectedSlot) return;
+    if (!selectedSchedule || !selectedSlot) {
+      setModalError("Iltimos, vaqtni tanlang.");
+      return;
+    }
+    if (selectedTopicIds.length === 0) {
+      setModalError("Iltimos, qayta topshirish uchun kamida bitta mavzuni tanlang.");
+      return;
+    }
     
     const slotData = timeSlotStats.find(s => s.timeSlot === selectedSlot);
     if (slotData?.isFullyBooked) {
@@ -136,7 +160,7 @@ const StudentHome: React.FC = () => {
     setSubmitting(true);
     setModalError(null);
     try {
-      await apiService.registerStudentQueue(selectedSchedule.id, selectedSlot);
+      await apiService.registerStudentQueue(selectedSchedule.id, selectedSlot, selectedTopicIds);
       setRegSuccess(true);
       setToast({ message: "Siz muvaffaqiyatli navbatga yozildingiz!", type: 'success' });
       
@@ -147,10 +171,8 @@ const StudentHome: React.FC = () => {
       }, 1500);
 
     } catch (e: any) { 
-        // Backend'dan kelgan aniq xabar
         const errMsg = e.message || "Xatolik yuz berdi.";
         setModalError(errMsg);
-        // Toast bildirishnoma ko'rsatamiz
         setToast({ message: errMsg, type: 'error' });
     } finally {
         setSubmitting(false);
@@ -189,8 +211,8 @@ const StudentHome: React.FC = () => {
       {/* Stats Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
          <StatCard title="Mening navbatlarim" value={myRegistrations.length} subtitle="ta faol" icon={Ticket} colorClass="bg-indigo-600 shadow-indigo-600/10" />
-         <StatCard title="Mavjud fanlar" value={availableSchedules.length} subtitle="ta ochiq" icon={Layers} colorClass="bg-emerald-600 shadow-emerald-600/10" />
-         <StatCard title="Qarzdorliklar" value={twoMBRecords.length} subtitle="ta (2/NB)" icon={AlertCircle} colorClass="bg-rose-600 shadow-rose-600/10" />
+         <StatCard title="Mavjud fanlar" value={availableSchedules.length} subtitle="ta ochiq" icon={Layers} colorClass="bg-emerald-500 shadow-emerald-500/10" />
+         <StatCard title="Qarzdorliklar" value={twoMBRecords.length} subtitle="ta (2/NB)" icon={AlertCircle} colorClass="bg-rose-500 shadow-rose-500/10" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -265,13 +287,13 @@ const StudentHome: React.FC = () => {
                               </div>
                               
                               {isRegistered ? (
-                                <div className="w-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-500/20">
+                                <div className="w-full bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-500/20">
                                    <CheckCircle size={16} /> Siz ro'yxatdan o'tgansiz
                                 </div>
                               ) : (
                                 <button 
                                     onClick={() => openRegModal(schedule)}
-                                    className="w-full bg-indigo-600 hover:bg-emerald-600 text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-indigo-600/20"
+                                    className="w-full bg-indigo-600 hover:bg-emerald-500 text-white py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-indigo-600/20"
                                 >
                                     <UserCheck size={16} /> Navbatga yozilish <ArrowRight size={14} />
                                 </button>
@@ -286,7 +308,7 @@ const StudentHome: React.FC = () => {
         {/* Arrears Panel */}
         <div className="lg:col-span-4 space-y-6">
             <div className="bg-white dark:bg-navy-900 rounded-xl border border-rose-500/10 shadow-sm overflow-hidden">
-                <div className="p-4 bg-rose-600 text-white flex items-center justify-between">
+                <div className="p-4 bg-rose-500 text-white flex items-center justify-between">
                    <div className="flex items-center gap-2">
                       <BookOpen size={18} />
                       <h3 className="text-xs font-black uppercase tracking-[0.15em]">Qarzdorliklar</h3>
@@ -331,22 +353,27 @@ const StudentHome: React.FC = () => {
       {/* Registration Modal */}
       {showRegModal && selectedSchedule && (
         <div className="fixed inset-0 bg-navy-950/60 backdrop-blur-sm z-[150] flex items-center justify-center p-4 animate-in fade-in duration-200">
-           <div className="bg-white dark:bg-navy-900 rounded-xl shadow-2xl w-full max-w-md border border-slate-100 dark:border-white/5 overflow-hidden animate-in zoom-in-95 duration-200">
-              <div className="p-5 border-b dark:border-white/5 flex justify-between items-center bg-slate-50/50 dark:bg-navy-950/50">
+           <div className="bg-white dark:bg-navy-900 rounded-xl shadow-2xl w-full max-w-md border border-slate-100 dark:border-white/5 overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+              <div className="p-5 border-b dark:border-white/5 flex justify-between items-center bg-slate-50/50 dark:bg-navy-950/50 shrink-0">
                  <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-md">
                        <Ticket size={20} />
                     </div>
                     <div>
                        <h3 className="font-black text-slate-900 dark:text-white uppercase text-xs tracking-tight leading-none mb-1 truncate max-w-[220px]">{selectedSchedule.name}</h3>
-                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Vaqtni tanlang</p>
+                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Qayta topshirish</p>
                     </div>
                  </div>
                  <button onClick={() => setShowRegModal(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-white/5 rounded-lg text-slate-500 transition-all"><X size={20}/></button>
               </div>
               
-              <div className="p-5">
-                 {regSuccess ? (
+              <div className="p-5 overflow-y-auto no-scrollbar flex-1">
+                 {modalLoading ? (
+                    <div className="flex flex-col items-center justify-center py-10 gap-2">
+                       <Loader2 className="animate-spin text-indigo-500" size={32} />
+                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Yuklanmoqda...</p>
+                    </div>
+                 ) : regSuccess ? (
                     <div className="py-12 flex flex-col items-center justify-center gap-4 animate-in zoom-in duration-300">
                         <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
                             <CheckCircle size={48} />
@@ -360,40 +387,94 @@ const StudentHome: React.FC = () => {
                     <>
                         {modalError && (
                             <div className="mb-4 p-4 bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-1">
-                               <AlertCircle className="text-rose-600 shrink-0 mt-0.5" size={20} />
-                               <p className="text-[12px] font-black text-rose-600 dark:text-rose-400 leading-tight uppercase tracking-tight">{modalError}</p>
+                               <AlertCircle className="text-rose-500 shrink-0 mt-0.5" size={20} />
+                               <p className="text-[12px] font-black text-rose-500 dark:text-rose-400 leading-tight uppercase tracking-tight">{modalError}</p>
                             </div>
                         )}
 
-                        <div className="grid grid-cols-2 gap-3 mb-6 max-h-[350px] overflow-y-auto no-scrollbar pr-1 mt-2">
-                            {timeSlotStats.map((slot, i) => (
-                            <button 
-                                key={i}
-                                type="button"
-                                disabled={slot.isFullyBooked}
-                                onClick={() => { setSelectedSlot(slot.timeSlot); setModalError(null); }}
-                                className={`p-4 border-2 rounded-xl text-center transition-all group relative overflow-hidden flex flex-col items-center justify-center ${
-                                    selectedSlot === slot.timeSlot 
-                                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-md scale-[1.02]' 
-                                    : slot.isFullyBooked 
-                                        ? 'bg-slate-50 dark:bg-white/5 text-slate-300 dark:text-slate-600 border-slate-100 dark:border-white/5 cursor-not-allowed opacity-60' 
-                                        : 'bg-white dark:bg-navy-900 text-slate-600 dark:text-slate-300 border-slate-100 dark:border-white/5 hover:border-indigo-500 hover:bg-slate-50'
-                                }`}
-                            >
-                                <p className="font-black text-sm tracking-tight mb-1">{slot.timeSlot}</p>
-                                <div className={`flex items-center gap-1 text-[8px] font-black uppercase tracking-widest ${selectedSlot === slot.timeSlot ? 'text-indigo-200' : slot.isFullyBooked ? 'text-rose-400' : 'text-slate-400'}`}>
-                                    {slot.isFullyBooked ? 'To\'lgan' : <><Monitor size={10} /> {slot.availableSeats} o'rin</>}
-                                </div>
-                            </button>
-                            ))}
+                        <div className="space-y-4 mb-6">
+                           <div>
+                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Mavzularni tanlang (2/NB)</label>
+                              {modalRecords.length === 0 ? (
+                                 <div className="p-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-xl text-center">
+                                    <p className="text-xs font-bold text-slate-400">Sizda qarzdorliklar topilmadi</p>
+                                 </div>
+                              ) : (
+                                 <div className="space-y-2 max-h-[200px] overflow-y-auto no-scrollbar pr-1">
+                                    {modalRecords.map(record => {
+                                       const isSelected = record.topicId && selectedTopicIds.includes(record.topicId);
+                                       return (
+                                          <button
+                                             key={record.id + (record.topicName || '')}
+                                             type="button"
+                                             disabled={!record.topicId}
+                                             onClick={() => { 
+                                                if (!record.topicId) return;
+                                                setSelectedTopicIds(prev => 
+                                                   prev.includes(record.topicId!) 
+                                                      ? prev.filter(id => id !== record.topicId) 
+                                                      : [...prev, record.topicId!]
+                                                );
+                                                setModalError(null); 
+                                             }}
+                                             className={`w-full p-3 rounded-xl border text-left transition-all relative ${
+                                                isSelected 
+                                                ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500 ring-1 ring-indigo-500' 
+                                                : !record.topicId 
+                                                   ? 'bg-slate-50 dark:bg-white/5 border-slate-100 dark:border-white/5 opacity-60 cursor-not-allowed'
+                                                   : 'bg-white dark:bg-navy-900 border-slate-100 dark:border-white/10 hover:border-indigo-300'
+                                             }`}
+                                          >
+                                             <div className="flex justify-between items-start gap-2">
+                                                <div className="min-w-0">
+                                                   <p className="text-[11px] font-black text-slate-900 dark:text-white uppercase leading-tight truncate">{record.journalSubjectName}</p>
+                                                   <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-1">"{record.topicName}"</p>
+                                                </div>
+                                                {record.topicId && isSelected && (
+                                                   <CheckCircle size={16} className="text-indigo-600 shrink-0" />
+                                                )}
+                                             </div>
+                                             {!record.topicId && <p className="text-[8px] text-rose-500 font-bold mt-1 uppercase">Mavzu ID mavjud emas</p>}
+                                          </button>
+                                       );
+                                    })}
+                                 </div>
+                              )}
+                           </div>
+
+                           <div>
+                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Vaqtni tanlang</label>
+                              <div className="grid grid-cols-2 gap-2">
+                                 {timeSlotStats.map((slot, i) => (
+                                 <button 
+                                    key={i}
+                                    type="button"
+                                    disabled={slot.isFullyBooked}
+                                    onClick={() => { setSelectedSlot(slot.timeSlot); setModalError(null); }}
+                                    className={`p-3 border rounded-xl text-center transition-all relative ${
+                                       selectedSlot === slot.timeSlot 
+                                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' 
+                                       : slot.isFullyBooked 
+                                          ? 'bg-slate-50 dark:bg-white/5 text-slate-300 dark:text-slate-600 border-slate-100 dark:border-white/5 cursor-not-allowed opacity-60' 
+                                          : 'bg-white dark:bg-navy-900 text-slate-600 dark:text-slate-300 border-slate-100 dark:border-white/10 hover:border-indigo-500 hover:bg-slate-50'
+                                    }`}
+                                 >
+                                    <p className="font-black text-xs tracking-tight">{slot.timeSlot}</p>
+                                    <div className={`text-[8px] font-black uppercase tracking-widest mt-0.5 ${selectedSlot === slot.timeSlot ? 'text-indigo-200' : slot.isFullyBooked ? 'text-rose-400' : 'text-slate-400'}`}>
+                                       {slot.isFullyBooked ? 'To\'lgan' : <>{slot.availableSeats} joy</>}
+                                    </div>
+                                 </button>
+                                 ))}
+                              </div>
+                           </div>
                         </div>
 
-                        <div className="flex gap-3">
+                        <div className="flex gap-3 pt-2">
                             <button type="button" onClick={() => setShowRegModal(false)} className="flex-1 py-3 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-lg font-black text-[10px] uppercase tracking-widest">Bekor qilish</button>
                             <button 
                                 type="button"
                                 onClick={handleRegister} 
-                                disabled={!selectedSlot || submitting}
+                                disabled={!selectedSlot || selectedTopicIds.length === 0 || submitting}
                                 className="flex-[2] py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-black text-[10px] uppercase tracking-[0.15em] shadow-lg shadow-indigo-600/20 disabled:opacity-50 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                             >
                                 {submitting ? <RefreshCw className="animate-spin" size={16}/> : <UserCheck size={16}/>}

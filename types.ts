@@ -73,6 +73,8 @@ export interface CatchupSchedule {
   date: string;
   startTime: string;
   endTime: string;
+  registrationStartTime?: string;
+  registrationEndTime?: string;
   timeSlots?: string[];
   timeSlotStatistics?: TimeSlotStatistic[];
   courses: number[];
@@ -102,6 +104,7 @@ export interface TwoMBRecord {
   id: number;
   journalSubjectName: string;
   topicName: string;
+  topicId: string | null;
   journalType: string;
   mark: string;
   date: string;
