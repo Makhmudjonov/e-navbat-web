@@ -77,56 +77,93 @@ const Login: React.FC = () => {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="group">
-              <div className="flex justify-between mb-2 px-1">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{role === UserRole.ADMIN ? 'Admin ID' : 'Hemis ID'}</label>
+          {role === UserRole.ADMIN ? (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="group">
+                <div className="flex justify-between mb-2 px-1">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Admin ID</label>
+                </div>
+                <div className="relative">
+                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                  <input
+                    type="text"
+                    className="w-full bg-slate-50 dark:bg-navy-950/50 border border-slate-200/50 dark:border-white/5 rounded-2xl pl-12 pr-4 py-4 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-300"
+                    placeholder="Admin loginini kiriting"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
-              <div className="relative">
-                <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                <input
-                  type="text"
-                  className="w-full bg-slate-50 dark:bg-navy-950/50 border border-slate-200/50 dark:border-white/5 rounded-2xl pl-12 pr-4 py-4 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-300"
-                  placeholder={role === UserRole.ADMIN ? "Admin loginini kiriting" : "Hemis ID raqamingiz"}
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
 
-            <div className="group">
-              <div className="flex justify-between mb-2 px-1">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Parol</label>
+              <div className="group">
+                <div className="flex justify-between mb-2 px-1">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Parol</label>
+                </div>
+                <div className="relative">
+                  <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                  <input
+                    type="password"
+                    className="w-full bg-slate-50 dark:bg-navy-950/50 border border-slate-200/50 dark:border-white/5 rounded-2xl pl-12 pr-4 py-4 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-300"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
-              <div className="relative">
-                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                <input
-                  type="password"
-                  className="w-full bg-slate-50 dark:bg-navy-950/50 border border-slate-200/50 dark:border-white/5 rounded-2xl pl-12 pr-4 py-4 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white placeholder:text-slate-300"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-5 sm:py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/20 transition-all active:scale-[0.97] flex items-center justify-center gap-3 disabled:opacity-70 mt-4 overflow-hidden group/btn"
-            >
-              {loading ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <>
-                  Tizimga kirish 
-                  <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-5 sm:py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/20 transition-all active:scale-[0.97] flex items-center justify-center gap-3 disabled:opacity-70 mt-4 overflow-hidden group/btn"
+              >
+                {loading ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <>
+                    Tizimga kirish 
+                    <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </button>
+            </form>
+          ) : (
+            <div className="space-y-6">
+              <div className="text-center px-4">
+                <p className="text-xs font-bold text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Tizimga kirish uchun HEMIS platformasidan foydalaning.
+                </p>
+              </div>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.href = 'https://api-navbat.tashmeduni.uz/api/auth/student/hemis/login';
+                }}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-5 sm:py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/20 transition-all active:scale-[0.97] flex items-center justify-center gap-3 overflow-hidden group/btn"
+              >
+                <img 
+                  src="https://hemis.tashmeduni.uz/static/crop/6/9/320_320_90_693523311.jpg" 
+                  className="w-6 h-6 rounded-full border border-white/20" 
+                  alt="hemis" 
+                  referrerPolicy="no-referrer"
+                />
+                HEMIS orqali kirish
+                <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+              </button>
+              
+              <div className="flex items-center gap-4 py-2">
+                <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/5"></div>
+                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Yoki</span>
+                <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/5"></div>
+              </div>
+              
+              <p className="text-[9px] text-center text-slate-400 dark:text-slate-500 font-medium">
+                Muammo yuzaga kelsa, dekanatga murojaat qiling.
+              </p>
+            </div>
+          )}
         </div>
         
         {/* Footer */}

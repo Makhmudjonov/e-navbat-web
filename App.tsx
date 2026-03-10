@@ -5,6 +5,7 @@ import { UserRole } from './types';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Login from './pages/Login';
+import OAuthCallback from './pages/OAuthCallback';
 import AdminLayout from './components/AdminLayout';
 import StudentLayout from './components/StudentLayout';
 
@@ -32,6 +33,8 @@ const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/logindata" element={<OAuthCallback />} />
+      <Route path="/oauth/callback" element={<OAuthCallback />} />
       
       <Route path="/admin/*" element={
         <ProtectedRoute allowedRole={UserRole.ADMIN}>
