@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { apiService } from '../services/api';
 import { UserRole } from '../types';
-import { User, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { User, Lock, ArrowRight, Loader2, GraduationCap } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [role, setRole] = useState<UserRole>(UserRole.STUDENT);
@@ -144,12 +144,9 @@ const Login: React.FC = () => {
                 }}
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white py-5 sm:py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/20 transition-all active:scale-[0.97] flex items-center justify-center gap-3 overflow-hidden group/btn"
               >
-                <img 
-                  src="https://hemis.tashmeduni.uz/static/crop/6/9/320_320_90_693523311.jpg" 
-                  className="w-6 h-6 rounded-full border border-white/20" 
-                  alt="hemis" 
-                  referrerPolicy="no-referrer"
-                />
+                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center border border-white/30">
+                  <GraduationCap size={14} className="text-white" />
+                </div>
                 HEMIS orqali kirish
                 <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
               </button>

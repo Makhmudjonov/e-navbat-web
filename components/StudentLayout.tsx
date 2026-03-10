@@ -120,10 +120,14 @@ const StudentLayout: React.FC = () => {
             >
               <div className="text-right hidden sm:block">
                 <p className="text-[10px] font-black text-slate-900 dark:text-white leading-none uppercase truncate max-w-[150px]">{user?.fullName}</p>
-                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Talaba</p>
+                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Talaba • {user?.course}-kurs</p>
               </div>
-              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center font-black text-xs border border-indigo-200/50 dark:border-indigo-500/20 group-hover:scale-105 transition-transform">
-                {user?.fullName?.charAt(0)}
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center font-black text-xs border border-indigo-200/50 dark:border-indigo-500/20 group-hover:scale-105 transition-transform overflow-hidden">
+                {user?.image ? (
+                  <img src={user.image} alt="avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  user?.fullName?.charAt(0)
+                )}
               </div>
             </div>
           </div>

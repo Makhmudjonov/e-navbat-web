@@ -24,7 +24,11 @@ const StudentProfile: React.FC = () => {
           <div className="absolute -top-12 left-8">
             <div className="w-28 h-28 bg-white dark:bg-navy-900 rounded-2xl shadow-xl p-2 border border-slate-100 dark:border-white/10 relative">
                <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-indigo-500 to-violet-600 rounded-xl flex items-center justify-center text-white font-black text-5xl shadow-inner uppercase tracking-tighter overflow-hidden">
-                  <span className="relative z-10">{user?.fullName?.charAt(0)}</span>
+                  {user?.image ? (
+                    <img src={user.image} alt="profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  ) : (
+                    <span className="relative z-10">{user?.fullName?.charAt(0)}</span>
+                  )}
                </div>
                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-500 border-4 border-white dark:border-navy-900 rounded-xl flex items-center justify-center text-white shadow-lg">
                   <Shield size={14} fill="currentColor" />
@@ -39,6 +43,11 @@ const StudentProfile: React.FC = () => {
                  <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.15em] flex items-center gap-1.5 bg-indigo-500/10 px-3 py-1 rounded-lg border border-indigo-500/20">
                     <GraduationCap size={14} /> {user?.course}-kurs Talaba
                  </span>
+                 {user?.avgGpa && (
+                   <span className="text-[10px] font-black text-amber-500 uppercase tracking-[0.15em] flex items-center gap-1.5 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/20">
+                      <Zap size={14} /> GPA: {user.avgGpa}
+                   </span>
+                 )}
                  <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.15em] flex items-center gap-1.5 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div> Faol
                  </span>
@@ -65,7 +74,8 @@ const StudentProfile: React.FC = () => {
                   <div className="w-12 h-12 bg-slate-50 dark:bg-navy-950/50 rounded-xl flex items-center justify-center text-indigo-600 border border-slate-200 dark:border-white/5 shadow-inner transition-all group-hover:bg-indigo-600 group-hover:text-white"><MapPin size={22}/></div>
                   <div className="min-w-0 flex-1">
                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Fakultet / Yo'nalish</p>
-                     <p className="text-sm font-black text-slate-800 dark:text-slate-100 leading-tight truncate">{user?.facultet?.name || 'Kiritilmagan'}</p>
+                     <p className="text-sm font-black text-slate-800 dark:text-slate-100 leading-tight">{user?.facultet?.name || 'Toshkent Tibbiyot Akademiyasi'}</p>
+                     {user?.specialty && <p className="text-[10px] font-bold text-slate-400 mt-1">Kod: {user.specialty}</p>}
                   </div>
                </div>
                <div className="flex items-center gap-5 group">
@@ -82,6 +92,15 @@ const StudentProfile: React.FC = () => {
                      <p className="text-sm font-black text-slate-800 dark:text-slate-100 tracking-tight">{user?.phoneNumber || 'Kiritilmagan'}</p>
                   </div>
                </div>
+               {user?.address && (
+                 <div className="flex items-center gap-5 group">
+                    <div className="w-12 h-12 bg-slate-50 dark:bg-navy-950/50 rounded-xl flex items-center justify-center text-indigo-600 border border-slate-200 dark:border-white/5 shadow-inner transition-all group-hover:bg-indigo-600 group-hover:text-white"><BookOpen size={22}/></div>
+                    <div className="min-w-0 flex-1">
+                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Manzil</p>
+                       <p className="text-sm font-black text-slate-800 dark:text-slate-100 leading-tight">{user.address}</p>
+                    </div>
+                 </div>
+               )}
           </div>
         </div>
 
