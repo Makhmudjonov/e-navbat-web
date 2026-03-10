@@ -30,12 +30,11 @@ api.interceptors.response.use(
 
     // Faqatgina 401 (Unauthorized) xatoligida sessiyani tozalaymiz
     if (error.response && error.response.status === 401) {
-      const currentHash = window.location.hash;
-      if (currentHash !== '#/login') {
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login') {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
-          window.location.hash = '/login';
-          setTimeout(() => window.location.reload(), 100);
+          window.location.href = '/login';
       }
     }
     return Promise.reject(error);

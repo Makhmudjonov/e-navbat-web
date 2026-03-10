@@ -1,6 +1,6 @@
 
 import React, { useContext } from 'react';
-import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { UserRole } from './types';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -48,21 +48,20 @@ const AppRoutes: React.FC = () => {
         </ProtectedRoute>
       } />
 
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };
 
-const App: React.FC = () => {
+export const App: React.FC = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <HashRouter>
+        <BrowserRouter>
           <AppRoutes />
-        </HashRouter>
+        </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
   );
 };
-
-export default App;

@@ -13,10 +13,22 @@ const AdminScanner: React.FC = () => {
   const scannerId = "reader";
 
   useEffect(() => {
-    const startScanner = async () => {
+    const startScanner = async (retries = 3) => {
       try {
-        await new Promise(r => setTimeout(r, 600));
+        // Wait for DOM to be ready and painted
+        await new Promise(r => setTimeout(r, 800));
         
+        const element = document.getElementById(scannerId);
+        if (!element) {
+          if (retries > 0) {
+            console.warn(`Scanner element with id ${scannerId} not found, retrying... (${retries} left)`);
+            startScanner(retries - 1);
+            return;
+          }
+          console.error(`Scanner element with id ${scannerId} not found after retries`);
+          return;
+        }
+
         if (scannerRef.current) {
           try {
             if (scannerRef.current.isScanning) {

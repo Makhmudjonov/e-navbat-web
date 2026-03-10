@@ -5,71 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TDTU Navbat | Elektron Navbat Tizimi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            },
-            colors: {
-              primary: {
-                50: '#f5f3ff',
-                100: '#ede9fe',
-                200: '#ddd6fe',
-                300: '#c4b5fd',
-                400: '#a78bfa',
-                500: '#3b82f6',
-                600: '#2563eb',
-                700: '#1d4ed8',
-                800: '#1e40af',
-                900: '#1e3a8a',
-              },
-              navy: {
-                800: '#0f172a',
-                900: '#0b1121',
-                950: '#020617'
-              }
-            }
-          }
-        }
-      }
-    </script>
-    <style>
-      body { 
-        font-family: 'Inter', sans-serif;
-        background-color: #f8fafc;
-      }
-      .dark body { background-color: #020617; }
-      
-      .dark .sidebar-item-active {
-        background-color: #2563eb;
-        color: white;
-      }
-      
-      .dark .card-navy {
-        background-color: #0b1121;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      /* Yaxshilangan scrollbar - ham vertikal, ham horizontal uchun */
-      ::-webkit-scrollbar { width: 5px; height: 5px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-      .dark ::-webkit-scrollbar-thumb { background: #334155; }
-      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-    </style>
     <script type="importmap">
     {
       "imports": {

@@ -30,6 +30,17 @@ export interface User {
   facultet?: Faculty;
   isActive?: boolean;
   createdAt?: string;
+  email?: string;
+  image?: string;
+  birthDate?: string;
+  address?: string;
+  avgGpa?: string;
+  specialty?: string;
+  groupId?: number;
+  department?: number;
+  level?: number;
+  studentStatus?: number;
+  tmaUserId?: number;
 }
 
 export interface Building {

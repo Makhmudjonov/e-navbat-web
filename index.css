@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-primary-50: #f5f3ff;
+  --color-primary-100: #ede9fe;
+  --color-primary-200: #ddd6fe;
+  --color-primary-300: #c4b5fd;
+  --color-primary-400: #a78bfa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  
+  --color-navy-800: #0f172a;
+  --color-navy-900: #0b1121;
+  --color-navy-950: #020617;
+}
+
+body { 
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
+}
+
+.dark body { background-color: #020617; }
+
+.dark .sidebar-item-active {
+  background-color: #2563eb;
+  color: white;
+}
+
+.dark .card-navy {
+  background-color: #0b1121;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Yaxshilangan scrollbar - ham vertikal, ham horizontal uchun */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.dark ::-webkit-scrollbar-thumb { background: #334155; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
