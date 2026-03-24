@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { apiService } from '../../services/api';
 import { CatchupSchedule, Building, Faculty } from '../../types';
 import { 
-  Plus, Calendar, Clock, Eye, Trash2, Search, MapPin, 
+  Plus, Calendar, Clock, Eye, Trash2, Search, MapPin, Edit2,
   X, Loader2, CheckCircle, GraduationCap, ChevronRight,
   Layers, School, Timer
 } from 'lucide-react';
@@ -13,6 +13,7 @@ const Queues: React.FC = () => {
   const [schedules, setSchedules] = useState<CatchupSchedule[]>([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<number | null>(null);
   
   const [showModal, setShowModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -28,7 +29,8 @@ const Queues: React.FC = () => {
     startTime: '09:00',
     endTime: '18:00',
     registrationStartTime: '',
-    registrationEndTime: ''
+    registrationEndTime: '',
+    isUnitest: true
   });
 
   const fetchData = async () => {
@@ -77,6 +79,23 @@ const Queues: React.FC = () => {
     }));
   };
 
+  const handleEdit = (schedule: CatchupSchedule) => {
+    setEditingId(Number(schedule.id));
+    setFormData({
+      name: schedule.name,
+      date: new Date(schedule.date).toISOString().split('T')[0],
+      courses: schedule.courses || [],
+      buildingId: String(schedule.buildingId),
+      facultetIds: schedule.facultetIds || schedule.students?.map(s => Number(s.student?.facultetId)).filter(Boolean) as number[] || [],
+      startTime: schedule.startTime?.slice(0, 5) || '09:00',
+      endTime: schedule.endTime?.slice(0, 5) || '18:00',
+      registrationStartTime: schedule.registrationStartTime ? new Date(schedule.registrationStartTime).toISOString().slice(0, 16) : '',
+      registrationEndTime: schedule.registrationEndTime ? new Date(schedule.registrationEndTime).toISOString().slice(0, 16) : '',
+      isUnitest: schedule.isUnitest ?? true
+    });
+    setShowModal(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.courses.length === 0) {
@@ -97,12 +116,18 @@ const Queues: React.FC = () => {
         registrationStartTime: formData.registrationStartTime ? new Date(formData.registrationStartTime).toISOString() : undefined,
         registrationEndTime: formData.registrationEndTime ? new Date(formData.registrationEndTime).toISOString() : undefined
       };
-      await apiService.createCatchupSchedule(payload);
+      if (editingId) {
+        await apiService.updateCatchupSchedule(editingId, payload);
+      } else {
+        await apiService.createCatchupSchedule(payload);
+      }
       setShowModal(false);
+      setEditingId(null);
       setFormData({
         name: '', date: '', courses: [], buildingId: '', facultetIds: [],
         startTime: '09:00', endTime: '18:00',
-        registrationStartTime: '', registrationEndTime: ''
+        registrationStartTime: '', registrationEndTime: '',
+        isUnitest: true
       });
       fetchData();
     } catch (err: any) {
@@ -202,7 +227,10 @@ const Queues: React.FC = () => {
                        <button onClick={() => navigate(`/admin/queues/${schedule.id}`)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-blue-500 hover:text-white rounded-xl text-slate-500 transition-all shadow-sm">
                           <Eye size={16}/>
                        </button>
-                       <button onClick={() => handleDelete(schedule.id)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-red-500 hover:text-white rounded-xl text-slate-500 transition-all shadow-sm">
+                       <button onClick={() => handleEdit(schedule)} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-indigo-500 hover:text-white rounded-xl text-slate-500 transition-all shadow-sm">
+                          <Edit2 size={16}/>
+                       </button>
+                       <button onClick={() => handleDelete(Number(schedule.id))} className="p-2 bg-slate-100 dark:bg-white/5 hover:bg-red-500 hover:text-white rounded-xl text-slate-500 transition-all shadow-sm">
                           <Trash2 size={16}/>
                        </button>
                     </div>
@@ -220,10 +248,12 @@ const Queues: React.FC = () => {
            <div className="bg-white dark:bg-navy-900 w-full max-w-xl rounded-[2rem] shadow-2xl border border-slate-100 dark:border-white/5 overflow-hidden animate-in zoom-in-95">
               <div className="px-6 py-5 border-b dark:border-white/5 flex justify-between items-center bg-slate-50/50 dark:bg-navy-950/50">
                  <div>
-                    <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Yangi navbat yaratish</h3>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                      {editingId ? 'Navbatni tahrirlash' : 'Yangi navbat yaratish'}
+                    </h3>
                     <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Sana va vaqtni tanlang</p>
                  </div>
-                 <button onClick={() => setShowModal(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-white/5 rounded-xl text-slate-500 transition-all"><X size={20}/></button>
+                 <button onClick={() => { setShowModal(false); setEditingId(null); }} className="p-2 hover:bg-slate-200 dark:hover:bg-white/5 rounded-xl text-slate-500 transition-all"><X size={20}/></button>
               </div>
 
               <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6 max-h-[80vh] overflow-y-auto no-scrollbar">
@@ -358,6 +388,22 @@ const Queues: React.FC = () => {
                     </div>
                  )}
 
+                  <div className="space-y-1.5">
+                     <label className="flex items-center gap-2 cursor-pointer group">
+                        <div className="relative">
+                           <input 
+                             type="checkbox" 
+                             className="peer sr-only" 
+                             checked={formData.isUnitest}
+                             onChange={e => setFormData({...formData, isUnitest: e.target.checked})}
+                           />
+                           <div className="w-10 h-5 bg-slate-200 dark:bg-navy-950 rounded-full peer-checked:bg-blue-500 transition-all"></div>
+                           <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full peer-checked:translate-x-5 transition-all"></div>
+                        </div>
+                        <span className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">UniTest uchun</span>
+                     </label>
+                  </div>
+
                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
                     <button 
                       type="button" 
@@ -372,7 +418,7 @@ const Queues: React.FC = () => {
                       className="flex-[2] py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-500/20 disabled:opacity-50 transition-all active:scale-95 flex items-center justify-center gap-2"
                     >
                        {submitting ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
-                       {submitting ? 'Yaratilmoqda...' : 'Navbatni yaratish'}
+                       {submitting ? 'Saqlanmoqda...' : (editingId ? 'Saqlash' : 'Navbatni yaratish')}
                     </button>
                  </div>
               </form>

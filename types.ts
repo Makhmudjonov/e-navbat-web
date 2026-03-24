@@ -93,6 +93,8 @@ export interface CatchupSchedule {
   registrationCount: number;
   attendeesCount: number;
   isActive: boolean;
+  isUnitest?: boolean;
+  facultetIds?: number[];
   building?: Building;
   students?: QueueRegistration[];
 }
@@ -106,6 +108,7 @@ export interface QueueRegistration {
   queueNumber?: number;
   qrCode?: string;
   isActive: boolean;
+  isExcused?: boolean;
   createdAt: string;
   catchupSchedule?: CatchupSchedule;
   student?: User;

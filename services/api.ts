@@ -131,13 +131,13 @@ class HybridService {
     return response.data.status ? response.data.data : [];
   }
 
-  async createCatchupSchedule(data: { name: string; date: string; courses: number[]; buildingId: number; facultetIds: number[]; startTime: string; endTime: string }): Promise<CatchupSchedule> {
+  async createCatchupSchedule(data: { name: string; date: string; courses: number[]; buildingId: number; facultetIds: number[]; startTime: string; endTime: string; isUnitest?: boolean }): Promise<CatchupSchedule> {
     const response = await api.post<ApiResponse<CatchupSchedule>>('/catchup-schedule', data);
     if (!response.data.status) throw new Error('Jadval yaratishda xatolik');
     return response.data.data;
   }
 
-  async updateCatchupSchedule(id: number | string, data: { name: string; date: string; courses: number[]; buildingId: number; facultetIds: number[]; startTime: string; endTime: string }): Promise<CatchupSchedule> {
+  async updateCatchupSchedule(id: number | string, data: { name: string; date: string; courses: number[]; buildingId: number; facultetIds: number[]; startTime: string; endTime: string; isUnitest?: boolean }): Promise<CatchupSchedule> {
     const response = await api.patch<ApiResponse<CatchupSchedule>>(`/catchup-schedule/${id}`, data);
     if (!response.data.status) throw new Error('Jadvalni yangilashda xatolik');
     return response.data.data;
@@ -206,8 +206,8 @@ class HybridService {
     return response.data.data;
   }
 
-  async markStudentArrived(hemisId: string, catchupScheduleId: number): Promise<any> {
-    const response = await api.post<ApiResponse<any>>('/catchup-schedule/mark-arrived', { hemisId, catchupScheduleId });
+  async markStudentArrived(hemisId: string, catchupScheduleId: number, isExcused: boolean = false): Promise<any> {
+    const response = await api.post<ApiResponse<any>>('/catchup-schedule/mark-arrived', { hemisId, catchupScheduleId, isExcused });
     if (!response.data.status) throw new Error(response.data.error?.message || response.data.error || 'Tasdiqlashda xatolik');
     return response.data.data;
   }

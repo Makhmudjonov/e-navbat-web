@@ -394,7 +394,7 @@ const StudentHome: React.FC = () => {
 
                         <div className="space-y-4 mb-6">
                            <div>
-                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Mavzularni tanlang (2/NB)</label>
+                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Mavzularni tanlang (Maksimal 3 ta)</label>
                               {modalRecords.length === 0 ? (
                                  <div className="p-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-xl text-center">
                                     <p className="text-xs font-bold text-slate-400">Sizda qarzdorliklar topilmadi</p>
@@ -410,11 +410,15 @@ const StudentHome: React.FC = () => {
                                              disabled={!record.topicId}
                                              onClick={() => { 
                                                 if (!record.topicId) return;
-                                                setSelectedTopicIds(prev => 
-                                                   prev.includes(record.topicId!) 
-                                                      ? prev.filter(id => id !== record.topicId) 
-                                                      : [...prev, record.topicId!]
-                                                );
+                                                if (selectedTopicIds.includes(record.topicId)) {
+                                                   setSelectedTopicIds(prev => prev.filter(id => id !== record.topicId));
+                                                } else {
+                                                   if (selectedTopicIds.length >= 3) {
+                                                      setModalError("Faqatgina 3 ta mavzu tanlash mumkin");
+                                                      return;
+                                                   }
+                                                   setSelectedTopicIds(prev => [...prev, record.topicId!]);
+                                                }
                                                 setModalError(null); 
                                              }}
                                              className={`w-full p-3 rounded-xl border text-left transition-all relative ${

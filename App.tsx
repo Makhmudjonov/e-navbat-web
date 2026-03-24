@@ -29,6 +29,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRole }
   return <>{children}</>;
 };
 
+const RootRedirect: React.FC = () => {
+  const { user, isAuthenticated } = useContext(AuthContext);
+  
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Navigate to={user.role === UserRole.ADMIN ? "/admin" : "/student"} replace />;
+};
+
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
@@ -48,8 +58,8 @@ const AppRoutes: React.FC = () => {
         </ProtectedRoute>
       } />
 
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<RootRedirect />} />
+      <Route path="*" element={<RootRedirect />} />
     </Routes>
   );
 };
